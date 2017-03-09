@@ -1,5 +1,7 @@
 # don't add to commit library .a and binary
 
+arcade
+
 # don't even think to commit ~, #, tmp, obj files, etc...
 
 *~

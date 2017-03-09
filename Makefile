@@ -1,10 +1,10 @@
-PROJECT = cpp_nanotekspice
+PROJECT = cpp_arcade
 
 OBJ_DIR = obj/
 
-# General behavior of nanotekspice
+# General behavior of arcade
 
-NAME_BIN = nanotekspice
+NAME_BIN = arcade
 
 SRC_GENDIR = src/
 OBJ_GENDIR = $(OBJ_DIR)src/
