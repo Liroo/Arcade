@@ -9,6 +9,8 @@ NAME_BIN = arcade
 SRC_GENDIR = src/
 OBJ_GENDIR = $(OBJ_DIR)src/
 
+LIBLOADER_DIR = assets/LibLoader/
+
 SRC_GEN = main.cpp
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
@@ -27,6 +29,7 @@ RM		= rm -rf
 
 all:
 	@make --no-print-directory $(NAME_BIN)
+	@make --no-print-directory -C $(LIBLOADER_DIR)
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)
