@@ -17,11 +17,11 @@ OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
 # Utility
 
-# INCDIRS := $(addprefix -I,$(shell find $(SRC_LIBDIR) -type d -print))
+INCDIRS := $(addprefix -I,$(shell find $(SRC_GENDIR) -type d -print)) -I./includes/
 CC = g++
 FLAGS = -W -Werror -Wextra -Wall
 FLAGS += -std=c++11
-CFLAGS = $(FLAGS) # $(INCDIRS)
+CFLAGS = $(FLAGS) $(INCDIRS)
 
 RM		= rm -rf
 
