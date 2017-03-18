@@ -1,0 +1,10 @@
+{
+  "name": "LibLoader",
+  "type": "system",
+
+  "config": {
+    "include_name": [
+      "LibLoader.hpp"
+    ]
+  }
+}
