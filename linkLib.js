@@ -28,11 +28,7 @@ const buildLib = (file) => {
     console.log('Copy of includes files:');
     lib.config.include_name.forEach((includeFile) => {
       console.log(`${includeFile}`);
-      try {
-        fs.accessSync(env.localIncludeDir + includeFile);
-      } catch (err) {
-        copyFile(env.libDir + file + '/' + includeFile, env.localIncludeDir + includeFile);
-      }
+      copyFile(env.libDir + file + '/' + includeFile, env.localIncludeDir + includeFile);
     });
   }
 

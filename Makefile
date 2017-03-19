@@ -9,9 +9,8 @@ NAME_BIN = arcade
 SRC_GENDIR = src/
 OBJ_GENDIR = $(OBJ_DIR)src/
 
-LIBLOADER_DIR = assets/LibLoader/
-
-SRC_GEN = main.cpp
+SRC_GEN = main.cpp \
+					core/Core.cpp
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
@@ -20,7 +19,7 @@ OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 INCDIRS := $(addprefix -I,$(shell find $(SRC_GENDIR) -type d -print)) -I./includes/
 CC = g++
 FLAGS = -W -Werror -Wextra -Wall
-FLAGS += -std=c++11
+FLAGS += -std=c++14 -pthread
 CFLAGS = $(FLAGS) $(INCDIRS)
 
 RM		= rm -rf
@@ -29,14 +28,13 @@ RM		= rm -rf
 
 all:
 	@make --no-print-directory $(NAME_BIN)
-	@make --no-print-directory -C $(LIBLOADER_DIR)
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 $(NAME_BIN): $(NAME_LIB) $(OBJ_GEN)
-	$(CC) -o $(NAME_BIN) $(OBJ_GEN)
+	$(CC) -o $(NAME_BIN) $(OBJ_GEN) $(FLAGS)
 
 clean:
 	$(RM) $(OBJ_DIR)

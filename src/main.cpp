@@ -1,5 +1,10 @@
-int main(int argc, char *argv[]) {
-  (void)argv;
-  (void)argc;
-  return 0;
+#include "Core.hpp"
+
+int main()
+{
+    Arcade::Core software("hello");
+
+    software.run();
+
+    return 0;
 }

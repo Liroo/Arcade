@@ -1,0 +1,10 @@
+{
+  "name": "Time",
+  "type": "system",
+
+  "config": {
+    "include_name": [
+      "Time.hpp"
+    ]
+  }
+}
