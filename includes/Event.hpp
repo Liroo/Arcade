@@ -6,6 +6,17 @@
 
 namespace Arcade {
 
+  typedef enum e_keyType {
+    KEY_TWO, // Previous graphics library
+    KEY_THREE, // Next graphics library
+    KEY_FOUR, // Previous game
+    KEY_FIVE, // Next game
+    KEY_EIGHT, // Restart the game
+    KEY_NINE, // Go back to the menu
+    KEY_ESC, // Exit
+    KEY_UNKNOWN = -1,
+  } KeyType;
+
   // refer to Event structure
   typedef enum e_eventType {
     RESIZE,
