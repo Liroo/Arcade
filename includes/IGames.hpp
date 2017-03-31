@@ -4,6 +4,7 @@
 # include <string>
 # include <chrono>
 
+# include "Event.hpp"
 # include "Object.hpp"
 
 namespace Arcade {
@@ -30,6 +31,11 @@ namespace Arcade {
       return vector of object each tick of times for update game
     */
     virtual std::vector<Arcade::Object> tick(std::chrono::milliseconds const &time) = 0;
+    /*
+      eventHandling:
+      handle event from graphic parts, this could be a key or resize but resize is not handled by games
+    */
+    virtual std::vector<Arcade::Object> eventHandling(const Event&) = 0;
     /*
       dump:
       return vector of all objects
