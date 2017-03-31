@@ -1,10 +1,13 @@
 #include "Core.hpp"
 
-int main()
+// __attributes__ is to remove to display help of soft
+int main(int argc [[gnu::unused]], char *argv[])
 {
-    Arcade::Core software("hello");
+    Arcade::Core software;
 
-    software.run();
+    if (software.init(argv[1])) {
+      software.run();
+    }
 
     return 0;
 }
