@@ -19,11 +19,6 @@ namespace Arcade {
       function for init the game
     */
     virtual void start() = 0;
-    /*
-      Play:
-      usefull for the Koalinette
-    */
-    virtual void Play() = 0;
 
   public:
     /*
