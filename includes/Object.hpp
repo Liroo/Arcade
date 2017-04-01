@@ -2,6 +2,7 @@
 # define OBJECT_HPP
 
 # include <string>
+# include <vector>
 
 namespace Arcade {
   /*

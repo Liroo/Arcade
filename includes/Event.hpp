@@ -1,7 +1,7 @@
 #ifndef EVENT_HPP
 # define EVENT_HPP
 
-# include <pair>
+# include <utility>
 # include <functional>
 
 namespace Arcade {
@@ -30,7 +30,7 @@ namespace Arcade {
 
     // if type is resize, both of pair is used as window size
     // else, only first is the key pressed
-    std::pair data;
+    std::pair<int, int> data;
   } Event;
 
   // Callback definition used for graphics library
