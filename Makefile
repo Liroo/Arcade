@@ -19,7 +19,7 @@ OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 INCDIRS := $(addprefix -I,$(shell find $(SRC_GENDIR) -type d -print)) -I./includes/
 CC = g++
 FLAGS = -W -Werror -Wextra -Wall
-FLAGS += -std=c++14 -pthread
+FLAGS += -std=c++11 -pthread
 CFLAGS = $(FLAGS) $(INCDIRS)
 
 RM		= rm -rf

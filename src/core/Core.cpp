@@ -105,7 +105,7 @@ int Core::run() {
       _graphicLib.update(toUpdate);
     */
 
-//    std::cout << "running" << std::endl;
+    //  std::cout << "running" << std::endl;
   }
   std::cout << "Over" << std::endl;
   return 0;
