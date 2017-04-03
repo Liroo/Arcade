@@ -1,0 +1,10 @@
+{
+  "name": "DirectoryLib",
+  "type": "system",
+
+  "config": {
+    "include_name": [
+      "DirectoryLib.hpp"
+    ]
+  }
+}

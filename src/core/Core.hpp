@@ -5,17 +5,11 @@
 # include <chrono>
 # include <vector>
 # include "Time.hpp"
+# include "DirectoryLib.hpp"
 
-// Defined error
-
-# define ERR_READDIR "There is an error during reading of directory: "
 # define ERR_STARTEDLIB "This lib is not compatible or does not exist: "
 
-// Core stuff
-
 # define TICK_MS 10
-# define DIR_LIB "lib/"
-# define DIR_GAMES "games/"
 
 namespace Arcade {
   class Core {
@@ -24,12 +18,9 @@ namespace Arcade {
     ~Core();
 
   private:
-    bool updateDirectoryContent(const char*,
-      std::vector<std::string> &);
-
-    std::vector<std::string> _availableLib;
+    DirectoryLib::DirectoryLibContent _availableLib;
     unsigned int _availableLibIndex = -1;
-    std::vector<std::string> _availableGame;
+    DirectoryLib::DirectoryLibContent _availableGame;
     unsigned int _availableGameIndex = -1;
 
   public:
