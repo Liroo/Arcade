@@ -26,11 +26,11 @@ namespace Arcade {
 
   typedef struct s_event {
     // type event
+    // if RESIZE is called, dump should be called
     EventType type;
 
-    // if type is resize, both of pair is used as window size
-    // else, only first is the key pressed
-    std::pair<int, int> data;
+    // the key pressed
+    KeyType data;
   } Event;
 
   // Callback definition used for graphics library
