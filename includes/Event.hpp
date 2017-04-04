@@ -14,6 +14,12 @@ namespace Arcade {
     KEY_EIGHT, // Restart the game
     KEY_NINE, // Go back to the menu
     KEY_ESC, // Exit
+
+    KEY_UP,
+    KEY_DOWN,
+    KEY_LEFT,
+    KEY_RIGHT,
+
     KEY_UNKNOWN = -1,
   } KeyType;
 
@@ -28,9 +34,10 @@ namespace Arcade {
     // type event
     // if RESIZE is called, dump should be called
     EventType type;
+    KeyType keyType;
 
-    // the key pressed
-    KeyType data;
+    // unknown key pressed
+    int data;
   } Event;
 
   // Callback definition used for graphics library
