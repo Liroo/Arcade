@@ -1,5 +1,5 @@
-#ifndef EVENT_HPP
-# define EVENT_HPP
+#ifndef EVENT_H
+# define EVENT_H
 
 # include <utility>
 # include <functional>
@@ -13,7 +13,8 @@ namespace Arcade {
     KEY_FIVE, // Next game
     KEY_EIGHT, // Restart the game
     KEY_NINE, // Go back to the menu
-    KEY_ESC, // Exit
+    KEY_ENTER, // used for menu
+    KEY_ESC, // Exit and last touch used by Core
 
     KEY_UP,
     KEY_DOWN,
@@ -27,6 +28,7 @@ namespace Arcade {
   typedef enum e_eventType {
     RESIZE,
     KEY_PRESSED,
+    TICK,
     UNKNOWN = -1
   } EventType;
 
@@ -34,7 +36,7 @@ namespace Arcade {
     // type event
     // if RESIZE is called, dump should be called
     EventType type;
-    KeyType keyType;
+    KeyType key;
 
     // unknown key pressed
     int data;

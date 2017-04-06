@@ -1,5 +1,5 @@
-#ifndef			ARCADE_PROTOCOL_HPP
-# define		ARCADE_PROTOCOL_HPP
+#ifndef			ARCADE_PROTOCOL_H
+# define		ARCADE_PROTOCOL_H
 # include		<stdint.h>
 
 namespace arcade {

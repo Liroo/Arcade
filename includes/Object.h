@@ -1,5 +1,5 @@
-#ifndef OBJECT_HPP
-# define OBJECT_HPP
+#ifndef OBJECT_H
+# define OBJECT_H
 
 # include <string>
 # include <vector>
@@ -52,6 +52,8 @@ namespace Arcade {
     */
     std::vector<std::vector<char>> rawImage;
   } Object;
-}
+
+  typedef std::vector<Object> ObjectList;
+};
 
 #endif

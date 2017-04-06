@@ -1,5 +1,5 @@
-#ifndef TIME_HPP
-# define TIME_HPP
+#ifndef TIMER_H
+# define TIMER_H
 
 # include <thread>
 # include <condition_variable>

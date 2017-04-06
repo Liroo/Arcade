@@ -1,8 +1,8 @@
-#ifndef IGRAPHIC_HPP
-# define IGRAPHIC_HPP
+#ifndef IGRAPHIC_H
+# define IGRAPHIC_H
 
-# include "Object.hpp"
-# include "Event.hpp"
+# include "Object.h"
+# include "Event.h"
 
 namespace Arcade{
 

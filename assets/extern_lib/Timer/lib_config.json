@@ -1,10 +1,10 @@
 {
-  "name": "Time",
+  "name": "Timer",
   "type": "system",
 
   "config": {
     "include_name": [
-      "Time.hpp"
+      "Timer.h"
     ]
   }
 }
