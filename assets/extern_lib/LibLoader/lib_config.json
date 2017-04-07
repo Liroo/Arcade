@@ -1,10 +1,4 @@
 {
-  "name": "LibLoader",
-  "type": "system",
-
-  "config": {
-    "include_name": [
-      "LibLoader.h"
-    ]
-  }
+  "name": "Lib Loader",
+  "type": "include"
 }

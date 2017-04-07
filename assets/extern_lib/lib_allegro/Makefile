@@ -1,15 +1,15 @@
-PROJECT = lib_game_test
+PROJECT = lib_allegro
 
 OBJ_DIR = ./obj
 
 # General behavior
 
-NAME_BIN = libGameTest.so
+NAME_BIN = libAllegro.so
 
 SRC_GENDIR = ./
 OBJ_GENDIR = $(OBJ_DIR)/
 
-SRC_GEN = LibGameTest.cpp
+SRC_GEN = Allegro.cpp
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
@@ -30,7 +30,7 @@ RM		= rm -rf
 all: $(NAME_BIN)
 
 install:
-	cp $(NAME_BIN) $(ROOT_PROJECT)games/
+	cp $(NAME_BIN) $(ROOT_PROJECT)lib/
 
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
@@ -45,7 +45,7 @@ clean:
 
 fclean:	clean
 	$(RM) $(NAME_BIN)
-	$(RM) $(ROOT_PROJECT)games/$(NAME_BIN)
+	$(RM) $(ROOT_PROJECT)lib/$(NAME_BIN)
 
 re: fclean all
 
