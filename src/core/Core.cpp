@@ -232,6 +232,7 @@ void Core::_changeLib(int offset) {
     if (_loadLib() == 0) {
       if (_graphic) {
         _graphic->close();
+        delete _graphic;
       }
       return;
     }
@@ -250,6 +251,9 @@ void Core::_changeGame(int offset) {
   _iterateIndex(_availableGame, _availableGameIndex, offset);
   while (indexCleat < 0) {
     if (_loadLib() == 0) {
+      if (_game) {
+        delete _game;
+      }
       return;
     }
     _iterateIndex(_availableGame, _availableGameIndex, offset);
@@ -301,5 +305,11 @@ void Core::_enterKey() {
 
 void Core::_exit() {
   _isRunning = false;
-  _graphic->close();
+  if (_graphic) {
+    _graphic->close();
+    delete _graphic;
+  }
+  if (_game) {
+    delete _game;
+  }
 }
