@@ -2,7 +2,7 @@ PROJECT = lib_allegro
 
 OBJ_DIR = ./obj
 
-# General behavior of arcade
+# General behavior
 
 NAME_BIN = libGameTest.so
 
@@ -13,9 +13,11 @@ SRC_GEN = LibGameTest.cpp
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
+ROOT_PROJECT = ./../../../
+
 # Utility
 
-INCDIRS = -I./../../../includes/
+INCDIRS = -I$(ROOT_PROJECT)includes/
 CC = g++
 FLAGS = -W -Werror -Wextra -Wall
 FLAGS += -std=c++11
@@ -25,8 +27,11 @@ RM		= rm -rf
 
 # Rules
 
-all:
-	@make --no-print-directory $(NAME_BIN)
+all: $(NAME_BIN)
+
+install:
+	cp $(NAME_BIN) $(ROOT_PROJECT)games/
+
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)
