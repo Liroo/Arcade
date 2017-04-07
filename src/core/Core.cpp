@@ -76,10 +76,16 @@ int Core::_loadGame() {
   if ((*_dlGame).isOpen()) {
     (*_dlGame).closeLib();
   }
-  if ((_game = _dlGame->openLib(_isMenu ? MENU_PATH :
-      _availableGame.at(_availableGameIndex))) == NULL) {
-    return -1;
-  }
+  #ifdef DEBUG
+    if ((_game = _dlGame->openLib(DEBUG_GAME)) == NULL) {
+      return -1;
+    }
+  #else
+    if ((_game = _dlGame->openLib(_isMenu ? MENU_PATH :
+        _availableGame.at(_availableGameIndex))) == NULL) {
+      return -1;
+    }
+  #endif
   return 0;
 }
 

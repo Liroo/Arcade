@@ -11,6 +11,8 @@
 # include "Object.h"
 # include "LibLoader.h"
 
+# define DEBUG_GAME "./games/libGameTest.so"
+
 # define ERR_STARTEDLIB "This lib is not compatible or does not exist: "
 # define ERR_GRAPHICINIT "Graphic lib failed to init"
 # define ERR_GRAPHICUPDATE "Graphic lib failed to update"
