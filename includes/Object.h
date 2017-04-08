@@ -33,7 +33,6 @@ namespace Arcade {
     */
     std::string animationType;
 
-
     /*
       text:
       text to display at a certain position
@@ -51,6 +50,17 @@ namespace Arcade {
       if graphic library is ascii mode, use rawImage as image
     */
     std::vector<std::vector<char>> rawImage;
+
+    /*
+      id to know which object it is
+    */
+    std::string id;
+
+    /*
+      elevation, order to display thing
+      or -1 to hide the object
+    */
+    int elevation;
   } Object;
 
   typedef std::vector<Object> ObjectList;

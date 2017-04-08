@@ -1,6 +1,6 @@
 # don't add to commit library .a and binary
 
-arcade
+libAllegro.so
 
 # don't even think to commit ~, #, tmp, obj files, etc...
 
@@ -12,8 +12,3 @@ obj/
 # tmp file from test
 
 # __test__/.tmp*
-
-# lib and games
-./lib/*
-./games/*
-./games/menu/*

@@ -37,6 +37,7 @@ bool Core::init(const std::string& libName) {
     std::cerr << ERR_STARTEDLIB << libName << std::endl;
     return false;
   }
+
   // setting index
   _availableLibIndex = std::distance(_availableLib.begin(), it);
   _dlGraphic.reset(new LibLoader<IGraphic>(DFL_ENTRY_NAME));
@@ -47,6 +48,7 @@ bool Core::init(const std::string& libName) {
 int Core::run() {
   // load first Libs
   if (_loadGame() == -1 || _loadLib() == -1) {
+    std::cout << "load" << std::endl;
     return 1;
   }
   while (_isRunning) {
@@ -73,8 +75,8 @@ void Core::_iterateIndex(const DirectoryLib::DirectoryLibContent& libContent,
 }
 
 int Core::_loadGame() {
-  if ((*_dlGame).isOpen()) {
-    (*_dlGame).closeLib();
+  if (_dlGame->isOpen()) {
+    _dlGame->closeLib();
   }
   #ifdef DEBUG
     if ((_game = _dlGame->openLib(DEBUG_GAME)) == NULL) {
@@ -90,8 +92,8 @@ int Core::_loadGame() {
 }
 
 int Core::_loadLib() {
-  if ((*_dlGraphic).isOpen()) {
-    (*_dlGraphic).closeLib();
+  if (_dlGraphic->isOpen()) {
+    _dlGraphic->closeLib();
   }
   if ((_graphic = _dlGraphic->openLib(_availableLib.at(_availableLibIndex))) == NULL) {
     return -1;

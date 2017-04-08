@@ -56,6 +56,21 @@ const buildLib = (file) => {
     }
     console.log('library installed!');
     console.log();
+  } else if (process.argv[2] == 'reinstall') {
+    const make = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 're']);
+    if (make.status != 0) {
+      console.log('failed to make library, verify the lib!')
+      console.log();
+      return;
+    }
+    const makeInstall = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 'install']);
+    if (makeInstall.status != 0) {
+      console.log('failed to install library, verify the lib!')
+      console.log();
+      return;
+    }
+    console.log('library reinstalled!');
+    console.log();
   } else if (process.argv[2] == 'uninstall') {
     const makeFclean = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 'fclean']);
     if (makeFclean.status != 0) {

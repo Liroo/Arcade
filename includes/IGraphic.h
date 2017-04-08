@@ -4,6 +4,9 @@
 # include "Object.h"
 # include "Event.h"
 
+# define WIN_WIDTH 800
+# define WIN_HEIGHT 600
+
 namespace Arcade{
 
   class IGraphic{
