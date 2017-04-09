@@ -3,6 +3,7 @@
 
 # include <string>
 # include <vector>
+# include <algorithm>
 
 namespace Arcade {
   /*
@@ -13,57 +14,63 @@ namespace Arcade {
       positionFrom:
         usefull to create animation from a position to another
     */
-    std::pair<int, int> positionFrom;
+    std::pair<int, int> position = { 0, 0 };
 
     /*
-      positionTo:
-      usefull to create animation to a position from another
+      size:
+      usefull to display with a correct size
     */
-    std::pair<int, int> positionTo;
+    std::pair<int, int> size = { 0, 0 };
 
     /*
-      animationDuration:
-      set the animation duration
+      backgroundColor:
+      background color
     */
-    double animationDuration;
-
-    /*
-      animationType:
-      the type of animation, could be fade, instant, elastic, etc...
-    */
-    std::string animationType;
-
-    /*
-      text:
-      text to display at a certain position
-    */
-    std::string text;
-
+    int backgroundColor = 0xFFFFFFFF;
     /*
       imageName:
       image to extract and to display at a certain position
     */
-    std::string imageName;
-
+    std::string imageName = "";
     /*
       rawImage:
       if graphic library is ascii mode, use rawImage as image
     */
-    std::vector<std::vector<char>> rawImage;
+    std::vector<std::string> rawImage = {};
+    /*
+      text:
+      text to display at a certain position
+    */
+    std::string text = "";
 
     /*
       id to know which object it is
     */
-    std::string id;
+    std::string id = "";
 
     /*
       elevation, order to display thing
       or -1 to hide the object
     */
-    int elevation;
+    int elevation = -1;
   } Object;
 
   typedef std::vector<Object> ObjectList;
+  inline ObjectList& appendObjectToList(ObjectList& ol, const Object& o) {
+    auto it = std::find_if(ol.begin(), ol.end(), [&o](Object item) -> bool {
+      if (item.id == o.id) { return true; }
+      return false;
+    });
+    if (it != ol.end()) { ol.erase(it); }
+    ol.push_back(o);
+    return ol;
+  }
+  inline ObjectList& appendListToList(ObjectList& ol, const ObjectList& o) {
+    for (auto it = o.begin(); it < o.end(); it++) {
+      appendObjectToList(ol, *it);
+    }
+    return ol;
+  }
 };
 
 #endif

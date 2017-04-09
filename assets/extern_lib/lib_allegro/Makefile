@@ -19,6 +19,7 @@ ROOT_PROJECT = ./../../../
 
 INCDIRS = -I$(ROOT_PROJECT)includes/
 CC = g++
+LDFLAGS = -lallegro -lallegro_ttf -lallegro_font -lallegro_primitives -lallegro_image
 FLAGS = -W -Werror -Wextra -Wall
 FLAGS += -std=c++11
 CFLAGS = $(FLAGS) $(INCDIRS)
@@ -38,7 +39,7 @@ $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	$(CC) -o $@ -c $< $(CFLAGS) -fpic
 
 $(NAME_BIN): $(NAME_LIB) $(OBJ_GEN)
-	$(CC) -o $(NAME_BIN) $(OBJ_GEN) $(FLAGS) -shared
+	$(CC) -o $(NAME_BIN) $(OBJ_GEN) $(FLAGS) $(LDFLAGS) -shared
 
 clean:
 	$(RM) $(OBJ_DIR)
