@@ -1,25 +1,25 @@
-#ifndef IGAMES_H
-# define IGAMES_H
+#ifndef AGAMES_H
+# define AGAMES_H
 
 # include <string>
 # include <chrono>
 # include <map>
 
+# include "components/Timer.h"
 # include "Event.h"
 # include "Object.h"
 
 namespace Arcade {
-
-  class IGames {
+  class AGames {
   public:
-    virtual ~IGames() {};
+    virtual ~AGames() {};
 
   public:
     /*
       start:
-      function for init the game
+      function for init and start the game
     */
-    virtual ObjectList start() = 0;
+    virtual ObjectList start(const Callback&) = 0;
     /*
       reset:
       function for reset the memory of the game
@@ -55,7 +55,9 @@ namespace Arcade {
     */
     virtual std::map<std::string, std::string> dumpMemory() const = 0;
 
-    };
+    protected:
+      Timer _timer;
+  };
 }
 
 #endif

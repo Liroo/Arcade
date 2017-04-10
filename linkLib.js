@@ -2,21 +2,23 @@
 
 const env = {
   libDir: 'assets/extern_lib/',
+  opaqueDir: 'assets/shared_lib/opaque/',
+  sharedDir: 'assets/shared_lib/shared/',
   configFileName: 'lib_config.json',
 };
 
 // let finalError = []; we should recap at the end if there is some errors
-
+var directoryInUse;
 const fs = require('fs');
 const childProcess = require('child_process');
 
 const buildLib = (file) => {
   try {
-    fs.accessSync(env.libDir + file + '/' + env.configFileName);
+    fs.accessSync(directoryInUse + file + '/' + env.configFileName);
   } catch (err) {
     return;
   }
-  const lib = JSON.parse(fs.readFileSync(env.libDir + file + '/' + env.configFileName));
+  const lib = JSON.parse(fs.readFileSync(directoryInUse + file + '/' + env.configFileName));
 
   console.log(`Building ${lib.name} library:`);
 
@@ -42,13 +44,13 @@ const buildLib = (file) => {
       break;
   }
   if (process.argv[2] == 'install') {
-    const make = childProcess.spawnSync('make', ['-C', env.libDir + file + '/']);
+    const make = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/']);
     if (make.status != 0) {
       console.log('failed to make library, verify the lib!')
       console.log();
       return;
     }
-    const makeInstall = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 'install']);
+    const makeInstall = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/', 'install']);
     if (makeInstall.status != 0) {
       console.log('failed to install library, verify the lib!')
       console.log();
@@ -57,13 +59,13 @@ const buildLib = (file) => {
     console.log('library installed!');
     console.log();
   } else if (process.argv[2] == 'reinstall') {
-    const make = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 're']);
+    const make = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/', 're']);
     if (make.status != 0) {
       console.log('failed to make library, verify the lib!')
       console.log();
       return;
     }
-    const makeInstall = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 'install']);
+    const makeInstall = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/', 'install']);
     if (makeInstall.status != 0) {
       console.log('failed to install library, verify the lib!')
       console.log();
@@ -72,7 +74,7 @@ const buildLib = (file) => {
     console.log('library reinstalled!');
     console.log();
   } else if (process.argv[2] == 'uninstall') {
-    const makeFclean = childProcess.spawnSync('make', ['-C', env.libDir + file + '/', 'fclean']);
+    const makeFclean = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/', 'fclean']);
     if (makeFclean.status != 0) {
       console.log('failed to fclean library, verify the lib!')
       console.log();
@@ -83,12 +85,10 @@ const buildLib = (file) => {
   }
 };
 
-const getLib = (err, files) => {
-  if (err) {
-    throw err;
-  }
+const getLib = (files) => {
   files.forEach((file) => {
-    const fileStat = fs.statSync(env.libDir + file);
+    console.log(directoryInUse);
+    const fileStat = fs.statSync(directoryInUse + file);
     if (fileStat.isDirectory()) {
       buildLib(file);
     }
@@ -96,4 +96,9 @@ const getLib = (err, files) => {
 };
 
 // main call
-fs.readdir(env.libDir, getLib);
+directoryInUse = env.opaqueDir;
+getLib(fs.readdirSync(env.opaqueDir));
+directoryInUse = env.sharedDir;
+getLib(fs.readdirSync(env.sharedDir));
+directoryInUse = env.libDir;
+getLib(fs.readdirSync(env.libDir));

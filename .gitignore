@@ -17,3 +17,4 @@ obj/
 ./lib/*
 ./games/*
 ./games/menu/*
+./shared_lib/*.so

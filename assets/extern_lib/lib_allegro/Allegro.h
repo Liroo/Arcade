@@ -11,7 +11,7 @@
 # include "allegro5/allegro_image.h"
 
 # define FONT_PATH "assets/ressource/font/SF.otf"
-# define TICK_MS (1.0/10)
+# define TICK_MS (1.0/30) // 30 FPS
 # define DSPL_WIDTH 1280
 # define DSPL_HEIGHT 720
 
@@ -25,6 +25,12 @@ class Allegro: public Arcade::IGraphic {
     virtual void run();
     virtual void close();
     virtual void update(std::vector<Arcade::Object>);
+
+    virtual bool canBeDeleted();
+
+  private:
+    bool _isDrawing;
+    bool _isLooping;
 
   private:
     void _handleEvent(const ALLEGRO_EVENT&);

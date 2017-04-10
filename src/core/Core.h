@@ -4,7 +4,7 @@
 # include <string>
 # include <vector>
 # include <memory>
-# include "IGames.h"
+# include "AGames.h"
 # include "IGraphic.h"
 # include "Event.h"
 # include "DirectoryReader.h"
@@ -59,14 +59,14 @@ namespace Arcade {
     void _changeGame(int offset);
     void _restartGame();
     void _startMenu();
-    void _enterKey();
+    void _playMenu();
     void _exit();
 
   private:
     // private library game and graphic
     bool _isMenu = true; // game is a menu
-    std::unique_ptr<LibLoader<IGames>> _dlGame;
-    std::unique_ptr<IGames> _game;
+    std::unique_ptr<LibLoader<AGames>> _dlGame;
+    std::unique_ptr<AGames> _game;
     std::unique_ptr<LibLoader<IGraphic>> _dlGraphic;
     std::unique_ptr<IGraphic> _graphic;
 

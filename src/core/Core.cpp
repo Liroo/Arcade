@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 // custom includes
+#include "unistd.h"
 #include "Core.h"
 #include "exceptions/ArcadeException.hpp"
 
@@ -41,7 +42,7 @@ bool Core::init(const std::string& libName) {
   // setting index
   _availableLibIndex = std::distance(_availableLib.begin(), it);
   _dlGraphic.reset(new LibLoader<IGraphic>(DFL_ENTRY_NAME));
-  _dlGame.reset(new LibLoader<IGames>(DFL_ENTRY_NAME));
+  _dlGame.reset(new LibLoader<AGames>(DFL_ENTRY_NAME));
   return true;
 }
 
@@ -96,6 +97,9 @@ int Core::_loadLib() {
   if (_dlGraphic->isOpen()) {
     _dlGraphic->closeLib();
   }
+  if (_graphic) {
+    _graphic->close();
+  }
   _graphic.reset(_dlGraphic->openLib(_availableLib.at(_availableLibIndex)));
   if (!_graphic) {
     return -1;
@@ -105,15 +109,14 @@ int Core::_loadLib() {
 
 void Core::_runGame() {
   if (_game) {
-    _game->start();
+    _game->start([this](const Event& event) -> void {
+      _handleEvent(event);
+    });
   }
 }
 
 int Core::_runLib() {
   try {
-    if (_graphic) {
-      _graphic->close();
-    }
     _graphic->init([this](const Event& event) -> void {
       _handleEvent(event);
     });
@@ -142,6 +145,12 @@ void Core::_handleEvent(const Event& event) {
     case Arcade::EventType::TICK:
       _handleTick();
       break;
+    case Arcade::EventType::PLAY:
+      _playMenu();
+      break;
+    case Arcade::EventType::EXIT:
+      _exit();
+      break;
     case Arcade::EventType::UNKNOWN:
       std::clog << UNK_EVNT << std::endl;
       break;
@@ -149,6 +158,9 @@ void Core::_handleEvent(const Event& event) {
 }
 
 void Core::_handleTick() {
+  if (!_game || !_graphic) {
+    return;
+  }
   // tick the game
   ObjectList objects = _game->tick();
   _graphic->update(objects);
@@ -156,6 +168,9 @@ void Core::_handleTick() {
 
 // not so heavy fn
 void Core::_handleKey(const Event& event) {
+  if (!_game || !_graphic) {
+    return;
+  }
   if (event.key <= KEY_ESC) {
     // update directory listing
     if (!DirectoryReader::updateDirectoryContent(DIR_LIB, _availableLib)
@@ -193,9 +208,6 @@ void Core::_handleKey(const Event& event) {
       {Arcade::KeyType::KEY_NINE, [this]() -> void {
         _startMenu();
       }},
-      {Arcade::KeyType::KEY_ENTER, [this]() -> void {
-        _enterKey();
-      }},
       {Arcade::KeyType::KEY_ESC, [this]() -> void {
         _exit();
       }},
@@ -208,10 +220,15 @@ void Core::_handleKey(const Event& event) {
     return;
   }
   ObjectList objects = _game->handleEvent(event);
-  _graphic->update(objects);
+  if (event.key != Arcade::KeyType::KEY_ENTER && _graphic) {
+    _graphic->update(objects);
+  }
 }
 
 void Core::_handleResize() {
+  if (!_game || !_graphic) {
+    return;
+  }
   // dumping of screen due to important changement on graphics
   ObjectList objects = _game->dump();
   _graphic->update(objects);
@@ -225,6 +242,12 @@ void Core::_changeLib(int offset) {
     if (_loadLib() == 0) {
       if (_graphic) {
         _graphic->close();
+        for (int i = 0; i < 5; i++) {
+          usleep(500);
+          if (_graphic->canBeDeleted()) {
+            _graphic.reset(nullptr);
+          }
+        }
         _graphic.reset(nullptr);
       }
       return;
@@ -246,6 +269,7 @@ void Core::_changeGame(int offset) {
     if (_loadLib() == 0) {
       if (_game) {
         _game.reset(nullptr);
+        break;
       }
       return;
     }
@@ -275,7 +299,7 @@ void Core::_startMenu() {
   }
 }
 
-void Core::_enterKey() {
+void Core::_playMenu() {
   std::map<std::string, std::string> config = _game->dumpMemory();
 
   std::string gameSelected = config.at("gameSelected");
@@ -305,9 +329,11 @@ void Core::_exit() {
   _isRunning = false;
   if (_graphic) {
     _graphic->close();
-    _graphic.reset(nullptr);
-  }
-  if (_game) {
-    _game.reset(nullptr);
+    for (int i = 0; i < 5; i++) {
+      usleep(500);
+      if (_graphic->canBeDeleted()) {
+        break;
+      }
+    }
   }
 }

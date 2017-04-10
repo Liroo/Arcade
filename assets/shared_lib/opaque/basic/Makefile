@@ -1,28 +1,28 @@
-PROJECT = lib_menu
+PROJECT = lib_directoryReader
 
 OBJ_DIR = ./obj
 
 # General behavior
 
-NAME_BIN = libMenu.so
+NAME_BIN = libDirectoryReader.so
 
 SRC_GENDIR = ./
 OBJ_GENDIR = $(OBJ_DIR)/
 
-SRC_GEN = Menu.cpp
+SRC_GEN = DirectoryReader.cpp
+INC_GEN = DirectoryReader.h
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
-ROOT_PROJECT = ./../../../
+ROOT_PROJECT = ./../../../../
 
 # Utility
 
-INCDIRS = -I$(ROOT_PROJECT)includes/
-LDFLAGS = -L$(ROOT_PROJECT)shared_lib/ -lComponents -lDirectoryReader
 CC = g++
+LDFLAGS = -ldl
 FLAGS = -W -Werror -Wextra -Wall
 FLAGS += -std=c++11
-CFLAGS = $(FLAGS) $(INCDIRS)
+CFLAGS = $(FLAGS)
 
 RM		= rm -rf
 
@@ -31,12 +31,13 @@ RM		= rm -rf
 all: $(NAME_BIN)
 
 install:
-	cp $(NAME_BIN) $(ROOT_PROJECT)games/menu
+	cp $(NAME_BIN) $(ROOT_PROJECT)shared_lib/
+	cp $(INC_GEN) $(ROOT_PROJECT)includes/
 
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ -c $< $(CFLAGS) -fPIC
+	$(CC) -o $@ -c $< $(CFLAGS) -fpic
 
 $(NAME_BIN): $(NAME_LIB) $(OBJ_GEN)
 	$(CC) -o $(NAME_BIN) $(OBJ_GEN) $(FLAGS) $(LDFLAGS) -shared
@@ -46,7 +47,8 @@ clean:
 
 fclean:	clean
 	$(RM) $(NAME_BIN)
-	$(RM) $(ROOT_PROJECT)games/menu/$(NAME_BIN)
+	$(RM) $(ROOT_PROJECT)shared_lib/$(NAME_BIN)
+	$(RM) $(ROOT_PROJECT)includes/$(INC_GEN)
 
 re: fclean all
 

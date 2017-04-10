@@ -4,7 +4,7 @@ PROJECT = lib_loader
 
 NAME_INC = LibLoader.h
 
-ROOT_PROJECT = ./../../../
+ROOT_PROJECT = ./../../../../
 
 # Utility
 

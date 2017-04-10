@@ -8,21 +8,28 @@ Arcade::Menu::Menu():
   _exit("exit"),
   _vader("vader", std::string(DIR_RESSOURCES) + "animated_vader/") {
   // pointer handler to handleEvent
-  _key[KEY_DOWN] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_DOWN] = [this]() -> ObjectList {
     return _keyDown();
   };
-  _key[KEY_UP] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_UP] = [this]() -> ObjectList {
     return _keyUp();
   };
-  _key[KEY_LEFT] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_LEFT] = [this]() -> ObjectList {
     return _keyLeft();
   };
-  _key[KEY_RIGHT] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_RIGHT] = [this]() -> ObjectList {
     return _keyRight();
+  };
+  _key[Arcade::KeyType::KEY_ENTER] = [this]() -> ObjectList {
+    return _keyEnter();
   };
 
   _background.id = "background";
   _cursorPosition = 0;
+}
+
+Arcade::Menu::~Menu() {
+  _timer.stop();
 }
 
 bool  Arcade::Menu::_updateDirLib() {
@@ -34,7 +41,7 @@ bool  Arcade::Menu::_updateDirLib() {
   return true;
 }
 
-Arcade::ObjectList Arcade::Menu::start() {
+Arcade::ObjectList Arcade::Menu::start(const Callback& callback) {
   // init styles of objects
   _background.position = { 0, 0 };
   _background.size = { 1280, 720 };
@@ -85,6 +92,8 @@ Arcade::ObjectList Arcade::Menu::start() {
   appendListToList(_objects, _exit.render());
   appendObjectToList(_objects, _vader.render());
   appendObjectToList(_objects, _background);
+  _callback = callback;
+  _timer.start();
   return _objects;
 }
 
@@ -107,7 +116,7 @@ Arcade::ObjectList Arcade::Menu::tick() {
       appendListToList(_objects, _exit.renderFocus());
       break;
   };
-  appendObjectToList(_objects, _vader.renderNext());
+  appendObjectToList(_objects, _vader.renderNext(_timer.getTick()));
   return _objects;
 }
 
@@ -127,6 +136,7 @@ void Arcade::Menu::reset() {
   if (!_updateDirLib() || _availableLib.empty() || _availableGame.empty()) {
     throw Arcade::Exception::ArcadeException(ERR_MENUNOTAVAILABLEBECAUSELIB); // ERROR
   }
+  _timer.reset();
   _game.setTextList(_availableGame);
   _graphic.setTextList(_availableLib);
   _cursorPosition = 0;
@@ -205,6 +215,25 @@ Arcade::ObjectList Arcade::Menu::_keyRight() {
     appendListToList(_objects, _game.renderPressedRight());
   } else if (_cursorPosition == 2) {
     appendListToList(_objects, _graphic.renderPressedRight());
+  }
+  return _objects;
+}
+
+Arcade::ObjectList Arcade::Menu::_keyEnter() {
+  if (_cursorPosition == 0) {
+    appendListToList(_objects, _play.renderPressed());
+    _callback({
+      Arcade::EventType::PLAY,
+      Arcade::KeyType::KEY_UNKNOWN,
+      0
+    });
+  } else if (_cursorPosition == 3) {
+    appendListToList(_objects, _exit.renderPressed());
+    _callback({
+      Arcade::EventType::EXIT,
+      Arcade::KeyType::KEY_UNKNOWN,
+      0
+    });
   }
   return _objects;
 }

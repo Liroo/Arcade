@@ -13,13 +13,13 @@ namespace Arcade {
     KEY_FIVE, // Next game
     KEY_EIGHT, // Restart the game
     KEY_NINE, // Go back to the menu
-    KEY_ENTER, // used for menu
     KEY_ESC, // Exit and last touch used by Core
 
     KEY_UP,
     KEY_DOWN,
     KEY_LEFT,
     KEY_RIGHT,
+    KEY_ENTER, // used for menu
 
     KEY_UNKNOWN = -1,
   } KeyType;
@@ -29,6 +29,10 @@ namespace Arcade {
     RESIZE,
     KEY_PRESSED,
     TICK,
+
+    PLAY,
+    EXIT,
+
     UNKNOWN = -1
   } EventType;
 

@@ -2,19 +2,19 @@
 # define MENU_H
 
 #include <functional>
-#include "IGames.h"
+#include "AGames.h"
 #include "DirectoryReader.h"
-#include "components/Button.hpp"
-#include "components/Carroussel.hpp"
-#include "components/AnimatedObject.hpp"
+#include "components/Button.h"
+#include "components/Carroussel.h"
+#include "components/AnimatedObject.h"
 
 # define ERR_STARTEDLIB "This lib is not compatible or does not exist: "
 
 namespace Arcade {
-  class Menu: public IGames {
+  class Menu: public AGames {
     public:
       Menu();
-      virtual ~Menu() {};
+      virtual ~Menu();
 
     private:
       Button _play;
@@ -32,7 +32,7 @@ namespace Arcade {
       DirectoryReader::DirectoryContent _availableGame;
 
     public:
-      virtual ObjectList start();
+      virtual ObjectList start(const Callback&);
       virtual void reset();
       virtual ObjectList dump() const;
       virtual ObjectList tick();
@@ -43,17 +43,19 @@ namespace Arcade {
       bool _updateDirLib();
 
     private:
+      Callback _callback;
       std::map<KeyType, std::function<ObjectList()>> _key;
 
       ObjectList _keyDown();
       ObjectList _keyUp();
       ObjectList _keyLeft();
       ObjectList _keyRight();
+      ObjectList _keyEnter();
   };
 };
 
 extern "C" {
-  IGames* load_lib() {
+  Arcade::AGames* load_lib() {
     return new Arcade::Menu;
   }
 }

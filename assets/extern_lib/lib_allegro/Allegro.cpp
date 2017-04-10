@@ -23,6 +23,8 @@ void Allegro::init(const Arcade::Callback& callback) {
   al_register_event_source(_eventQueue, _keyboardEventSource);
   al_register_event_source(_eventQueue, al_get_timer_event_source(_timer));
   _callback = callback;
+  _isDrawing = false;
+  _isLooping = false;
 }
 
 void Allegro::run() {
@@ -32,13 +34,14 @@ void Allegro::run() {
   // loopinp
   al_clear_to_color(al_map_rgb(0,0,0));
   al_flip_display();
+  al_start_timer(_timer);
+  _isRunning = true;
+  _isLooping = true;
   _callback({
     Arcade::EventType::RESIZE,
     Arcade::KeyType::KEY_UNKNOWN,
     0
   });
-  al_start_timer(_timer);
-  _isRunning = true;
   while (_isRunning) {
     // event
     ALLEGRO_EVENT event;
@@ -53,21 +56,26 @@ void Allegro::run() {
       _handleEvent(event);
     }
   }
-  al_stop_timer(_timer);
+  _isLooping = false;
 }
 
 void Allegro::close() {
-  _isRunning = false;
+  al_stop_timer(_timer);
   if (_eventQueue && _keyboardEventSource) {
     al_unregister_event_source(_eventQueue, _keyboardEventSource);
     al_unregister_event_source(_eventQueue, al_get_timer_event_source(_timer));
   }
+  _isRunning = false;
   if (_display) {
     al_destroy_display(_display);
   }
 }
 
 void Allegro::update(Arcade::ObjectList objs) {
+  if (!_isRunning || !_isLooping) {
+    return;
+  }
+  _isDrawing = true;
   std::sort(objs.begin(), objs.end(), [](Arcade::Object i1, Arcade::Object i2) -> bool {
     return i1.elevation < i2.elevation;
   });
@@ -75,9 +83,18 @@ void Allegro::update(Arcade::ObjectList objs) {
     _drawObj(obj);
   });
   al_flip_display();
+  _isDrawing = false;
+}
+
+bool Allegro::canBeDeleted() {
+  return !(_isDrawing & _isLooping);
 }
 
 void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
+  if (!_isRunning) {
+    return;
+  }
+
   Arcade::KeyType keyPressed = Arcade::KeyType::KEY_UNKNOWN;
 
   // event serialization
@@ -127,6 +144,10 @@ void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
 }
 
 void Allegro::_drawObj(const Arcade::Object& obj) const {
+  if (!_isRunning) {
+    return;
+  }
+
   if (obj.backgroundColor >= 0)
     _drawButton(obj);
   if (!obj.imageName.empty())

@@ -19,6 +19,8 @@ namespace Arcade{
       virtual void close() = 0;
       virtual void update(std::vector<Arcade::Object>) = 0;
 
+      virtual bool canBeDeleted() = 0;
+
   };
 
 }

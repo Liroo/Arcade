@@ -2,9 +2,9 @@
 # define LIBGAMETEST_H
 
 # include <memory>
-# include "IGames.h"
+# include "AGames.h"
 
-class LibGameTest: public Arcade::IGames {
+class LibGameTest: public Arcade::AGames {
   public:
     LibGameTest();
     virtual ~LibGameTest();
@@ -24,7 +24,7 @@ class LibGameTest: public Arcade::IGames {
 };
 
 extern "C" {
-  Arcade::IGames* load_lib() {
+  Arcade::AGames* load_lib() {
     return new LibGameTest;
   }
 }
