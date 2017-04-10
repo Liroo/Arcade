@@ -242,13 +242,16 @@ void Core::_changeLib(int offset) {
     if (_loadLib() == 0) {
       if (_graphic) {
         _graphic->close();
-        for (int i = 0; i < 5; i++) {
+        int i = 0;
+        for (; i < 10; i++) {
           usleep(500);
           if (_graphic->canBeDeleted()) {
             _graphic.reset(nullptr);
           }
         }
-        _graphic.reset(nullptr);
+        if (i == 10) {
+          _forceExit();
+        }
       }
       return;
     }
@@ -329,11 +332,20 @@ void Core::_exit() {
   _isRunning = false;
   if (_graphic) {
     _graphic->close();
-    for (int i = 0; i < 5; i++) {
+    int i = 0;
+    for (; i < 10; i++) {
       usleep(500);
       if (_graphic->canBeDeleted()) {
         break;
       }
     }
+    if (i == 5) {
+      _forceExit();
+    }
   }
+}
+
+void Core::_forceExit() {
+  std::cerr << FATAL_ERROR << std::endl;
+  exit(1);
 }

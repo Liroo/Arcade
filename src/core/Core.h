@@ -21,6 +21,8 @@
 # define WRN_GAMENOTAVAILABLE "This game is not available anymore, refresh"
 # define UNK_EVNT "Unknown event called"
 
+# define FATAL_ERROR "Fatal error, force exit, possible memory leak"
+
 # define MENU_PATH "./games/menu/libmenu.so"
 
 namespace Arcade {
@@ -61,6 +63,8 @@ namespace Arcade {
     void _startMenu();
     void _playMenu();
     void _exit();
+
+    void _forceExit();
 
   private:
     // private library game and graphic
