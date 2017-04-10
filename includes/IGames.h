@@ -19,7 +19,7 @@ namespace Arcade {
       start:
       function for init the game
     */
-    virtual void start() = 0;
+    virtual ObjectList start() = 0;
     /*
       reset:
       function for reset the memory of the game

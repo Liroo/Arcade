@@ -32,6 +32,7 @@ namespace Arcade {
       image to extract and to display at a certain position
     */
     std::string imageName = "";
+    float imageRotation = 0.0;
     /*
       rawImage:
       if graphic library is ascii mode, use rawImage as image
@@ -42,6 +43,7 @@ namespace Arcade {
       text to display at a certain position
     */
     std::string text = "";
+    int fontSize = 36;
 
     /*
       id to know which object it is

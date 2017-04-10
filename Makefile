@@ -20,7 +20,7 @@ INCDIRS := $(addprefix -I,$(shell find $(SRC_GENDIR) -type d -print)) -I./includ
 CXX = g++
 LDFLAGS = -ldl
 FLAGS = -W -Werror -Wextra -Wall
-FLAGS += -std=c++11
+FLAGS += -std=c++14
 FLAGS += $(DEBUG)
 CXXFLAGS = $(FLAGS) $(INCDIRS)
 

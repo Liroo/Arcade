@@ -7,15 +7,13 @@
 # include "IGames.h"
 # include "IGraphic.h"
 # include "Event.h"
-# include "DirectoryLib.h"
+# include "DirectoryReader.h"
 # include "Object.h"
 # include "LibLoader.h"
 
 # define DEBUG_GAME "./games/libGameTest.so"
 
 # define ERR_STARTEDLIB "This lib is not compatible or does not exist: "
-# define ERR_GRAPHICINIT "Graphic lib failed to init"
-# define ERR_GRAPHICUPDATE "Graphic lib failed to update"
 # define ERR_NOMORELIBAVAILABLE "No more lib available, exit"
 # define ERR_NOMOREGAMEAVAILABLE "No more game available, exit"
 # define ERR_MENUNOTAVAILABLE "Menu is not available anymore, exit"
@@ -24,7 +22,6 @@
 # define UNK_EVNT "Unknown event called"
 
 # define MENU_PATH "./games/menu/libmenu.so"
-# define TICK_MS 10
 
 namespace Arcade {
   class Core {
@@ -39,11 +36,11 @@ namespace Arcade {
     int _runLib();
 
   private:
-    void _iterateIndex(const DirectoryLib::DirectoryLibContent&,
+    void _iterateIndex(const DirectoryReader::DirectoryContent&,
       int&, int);
-    DirectoryLib::DirectoryLibContent _availableLib;
+    DirectoryReader::DirectoryContent _availableLib;
     int _availableLibIndex = -1;
-    DirectoryLib::DirectoryLibContent _availableGame;
+    DirectoryReader::DirectoryContent _availableGame;
     int _availableGameIndex = -1;
 
   public:
@@ -69,9 +66,9 @@ namespace Arcade {
     // private library game and graphic
     bool _isMenu = true; // game is a menu
     std::unique_ptr<LibLoader<IGames>> _dlGame;
-    IGames* _game = nullptr;
+    std::unique_ptr<IGames> _game;
     std::unique_ptr<LibLoader<IGraphic>> _dlGraphic;
-    IGraphic* _graphic = nullptr;
+    std::unique_ptr<IGraphic> _graphic;
 
   private:
     bool _isRunning = true;

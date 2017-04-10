@@ -15,6 +15,7 @@ namespace Arcade{
       virtual ~IGraphic() {};
 
       virtual void init(const Callback&) = 0;
+      virtual void run() = 0;
       virtual void close() = 0;
       virtual void update(std::vector<Arcade::Object>) = 0;
 

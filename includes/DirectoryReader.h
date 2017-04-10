@@ -1,5 +1,5 @@
-#ifndef DIRECTORY_LIB
-# define DIRECTORY_LIB
+#ifndef DIRECTORY_READER
+# define DIRECTORY_READER
 
 # include <string>
 # include <vector>
@@ -7,17 +7,18 @@
 # include <algorithm>
 # include <unordered_set>
 // C includes
-#include "dirent.h"
-#include "sys/stat.h"
+# include "dirent.h"
+# include "sys/stat.h"
 
 # define ERR_READDIR "There is an error during reading of directory: "
 
 # define DIR_LIB "lib/"
 # define DIR_GAMES "games/"
+# define DIR_RESSOURCES "assets/ressource/"
 
-class DirectoryLib {
+class DirectoryReader {
   public:
-    typedef std::vector<std::string> DirectoryLibContent;
+    typedef std::vector<std::string> DirectoryContent;
     /*
       This custom algo is O(n) + O(k) speed (didn't found a fastest way to do what I want)
         ~ anyway O(n) + O(k) is actually pretty fast
@@ -27,7 +28,7 @@ class DirectoryLib {
         - k is the numbers of file in directory
     */
     static bool updateDirectoryContent(const char* directoryName,
-        DirectoryLibContent& libData) {
+        DirectoryContent& data) {
       DIR *dir;
 
       if ((dir = opendir(directoryName)) == NULL) {
@@ -51,16 +52,16 @@ class DirectoryLib {
           continue;
         }
         regularFiles.insert(relativeFilePath);
-        if (!std::binary_search(libData.begin(), libData.end(), relativeFilePath)) {
-          libData.push_back(relativeFilePath);
+        if (!std::binary_search(data.begin(), data.end(), relativeFilePath)) {
+          data.push_back(relativeFilePath);
         }
       }
       closedir(dir);
       // custom for_each getting iterator as value
       // useful to clear memory of old library deleted during runtime
-      for (auto i = libData.begin(); i < libData.begin(); i++) {
+      for (auto i = data.begin(); i < data.begin(); i++) {
         if (!std::binary_search(regularFiles.begin(), regularFiles.end(), *i)) {
-          libData.erase(i);
+          data.erase(i);
         }
       }
       return true;

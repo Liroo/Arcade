@@ -10,6 +10,11 @@
 # include "allegro5/allegro_primitives.h"
 # include "allegro5/allegro_image.h"
 
+# define FONT_PATH "assets/ressource/font/SF.otf"
+# define TICK_MS (1.0/10)
+# define DSPL_WIDTH 1280
+# define DSPL_HEIGHT 720
+
 class Allegro: public Arcade::IGraphic {
   public:
     Allegro();
@@ -17,12 +22,18 @@ class Allegro: public Arcade::IGraphic {
 
   public:
     virtual void init(const Arcade::Callback&);
+    virtual void run();
     virtual void close();
     virtual void update(std::vector<Arcade::Object>);
-    void drawObj(const Arcade::Object&) const;
-    void drawText(const Arcade::Object&) const;
-    void drawButton(const Arcade::Object&) const;
-    void drawImage(const Arcade::Object&) const;
+
+  private:
+    void _handleEvent(const ALLEGRO_EVENT&);
+
+  private:
+    void _drawObj(const Arcade::Object&) const;
+    void _drawText(const Arcade::Object&) const;
+    void _drawButton(const Arcade::Object&) const;
+    void _drawImage(const Arcade::Object&) const;
 
   private:
     Arcade::Callback _callback;
@@ -33,6 +44,7 @@ class Allegro: public Arcade::IGraphic {
   private:
     // specific to the library Allegro
     ALLEGRO_DISPLAY* _display;
+    ALLEGRO_TIMER* _timer;
     ALLEGRO_EVENT_QUEUE* _eventQueue;
     ALLEGRO_EVENT_SOURCE* _keyboardEventSource;
 };

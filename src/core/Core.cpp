@@ -2,9 +2,9 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
-
 // custom includes
 #include "Core.h"
+#include "exceptions/ArcadeException.hpp"
 
 using namespace Arcade;
 
@@ -20,8 +20,8 @@ bool Core::init(const std::string& libName) {
     return false;
   }
   // update directory listing
-  if (!DirectoryLib::updateDirectoryContent(DIR_LIB, _availableLib)
-      || !DirectoryLib::updateDirectoryContent(DIR_GAMES, _availableGame)) {
+  if (!DirectoryReader::updateDirectoryContent(DIR_LIB, _availableLib)
+      || !DirectoryReader::updateDirectoryContent(DIR_GAMES, _availableGame)) {
     return false;
   }
   // find correct libName
@@ -48,12 +48,18 @@ bool Core::init(const std::string& libName) {
 int Core::run() {
   // load first Libs
   if (_loadGame() == -1 || _loadLib() == -1) {
-    std::cout << "load" << std::endl;
     return 1;
   }
   while (_isRunning) {
-    _runGame();
-    if (_runLib() == -1) {
+    if (_game) {
+      try {
+        _runGame();
+      } catch (const Arcade::Exception::ArcadeException &e) {
+        std::cout << e.what() << std::endl;
+        return 0;
+      }
+    }
+    if (_graphic && _runLib() == -1) {
       return 1;
     }
   }
@@ -62,7 +68,7 @@ int Core::run() {
 
 // Dynamic Library handling
 
-void Core::_iterateIndex(const DirectoryLib::DirectoryLibContent& libContent,
+void Core::_iterateIndex(const DirectoryReader::DirectoryContent& libContent,
   int& index, int iteration) {
   // check if iteration is available
   if (iteration > 0 && index + iteration >= (int)libContent.size()) {
@@ -78,16 +84,11 @@ int Core::_loadGame() {
   if (_dlGame->isOpen()) {
     _dlGame->closeLib();
   }
-  #ifdef DEBUG
-    if ((_game = _dlGame->openLib(DEBUG_GAME)) == NULL) {
-      return -1;
-    }
-  #else
-    if ((_game = _dlGame->openLib(_isMenu ? MENU_PATH :
-        _availableGame.at(_availableGameIndex))) == NULL) {
-      return -1;
-    }
-  #endif
+  _game.reset(_dlGame->openLib(_isMenu ? MENU_PATH :
+      _availableGame.at(_availableGameIndex)));
+  if (!_game) {
+    return -1;
+  }
   return 0;
 }
 
@@ -95,7 +96,8 @@ int Core::_loadLib() {
   if (_dlGraphic->isOpen()) {
     _dlGraphic->closeLib();
   }
-  if ((_graphic = _dlGraphic->openLib(_availableLib.at(_availableLibIndex))) == NULL) {
+  _graphic.reset(_dlGraphic->openLib(_availableLib.at(_availableLibIndex)));
+  if (!_graphic) {
     return -1;
   }
   return 0;
@@ -115,17 +117,12 @@ int Core::_runLib() {
     _graphic->init([this](const Event& event) -> void {
       _handleEvent(event);
     });
-  } catch (...) {
-    std::cerr << ERR_GRAPHICINIT << std::endl;
+    _graphic->run();
+  } catch (const Arcade::Exception::ArcadeException &e) {
+    std::cerr << e.what() << std::endl;
     return -1;
   }
-  // dumping of screen due to changement of game
-  ObjectList objects = _game->dump();
-  try {
-    _graphic->update(objects);
-  } catch (...) {
-    std::cerr << ERR_GRAPHICUPDATE << std::endl;
-  }
+
   return 0;
 }
 
@@ -154,19 +151,15 @@ void Core::_handleEvent(const Event& event) {
 void Core::_handleTick() {
   // tick the game
   ObjectList objects = _game->tick();
-  try {
-    _graphic->update(objects);
-  } catch (...) {
-    std::cerr << ERR_GRAPHICUPDATE << std::endl;
-  }
+  _graphic->update(objects);
 }
 
 // not so heavy fn
 void Core::_handleKey(const Event& event) {
   if (event.key <= KEY_ESC) {
     // update directory listing
-    if (!DirectoryLib::updateDirectoryContent(DIR_LIB, _availableLib)
-        || !DirectoryLib::updateDirectoryContent(DIR_GAMES, _availableGame)) {
+    if (!DirectoryReader::updateDirectoryContent(DIR_LIB, _availableLib)
+        || !DirectoryReader::updateDirectoryContent(DIR_GAMES, _availableGame)) {
       return;
     }
     /*
@@ -215,21 +208,13 @@ void Core::_handleKey(const Event& event) {
     return;
   }
   ObjectList objects = _game->handleEvent(event);
-  try {
-    _graphic->update(objects);
-  } catch (...) {
-    std::cerr << ERR_GRAPHICUPDATE << std::endl;
-  }
+  _graphic->update(objects);
 }
 
 void Core::_handleResize() {
   // dumping of screen due to important changement on graphics
   ObjectList objects = _game->dump();
-  try {
-    _graphic->update(objects);
-  } catch (...) {
-    std::cerr << ERR_GRAPHICUPDATE << std::endl;
-  }
+  _graphic->update(objects);
 }
 
 // Core event
@@ -240,7 +225,7 @@ void Core::_changeLib(int offset) {
     if (_loadLib() == 0) {
       if (_graphic) {
         _graphic->close();
-        delete _graphic;
+        _graphic.reset(nullptr);
       }
       return;
     }
@@ -260,7 +245,7 @@ void Core::_changeGame(int offset) {
   while (indexCleat < 0) {
     if (_loadLib() == 0) {
       if (_game) {
-        delete _game;
+        _game.reset(nullptr);
       }
       return;
     }
@@ -273,7 +258,12 @@ void Core::_changeGame(int offset) {
 
 void Core::_restartGame() {
   if (_game) {
-    _game->reset();
+    try {
+      _game->reset();
+    } catch (const Arcade::Exception::ArcadeException &e) {
+      std::cout << e.what() << std::endl;
+      _exit();
+    }
   }
 }
 
@@ -315,9 +305,9 @@ void Core::_exit() {
   _isRunning = false;
   if (_graphic) {
     _graphic->close();
-    delete _graphic;
+    _graphic.reset(nullptr);
   }
   if (_game) {
-    delete _game;
+    _game.reset(nullptr);
   }
 }

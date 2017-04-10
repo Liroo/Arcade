@@ -1,95 +1,66 @@
 #include <iostream>
 #include "Allegro.h"
+#include "exceptions/ArcadeException.hpp"
 
 Allegro::Allegro() {}
 Allegro::~Allegro() {}
 
 void Allegro::init(const Arcade::Callback& callback) {
-  if (al_init() == false) {
-    throw;
+  // init allegro and custom attributes
+  if (!al_init()
+    || !(_timer = al_create_timer(TICK_MS))
+    || !al_init_font_addon()
+    || !al_init_ttf_addon()
+    || !al_init_image_addon()
+    || !al_init_primitives_addon()
+    || !al_install_keyboard()
+    || !(_eventQueue = al_create_event_queue())
+    || !(_keyboardEventSource = al_get_keyboard_event_source())) {
+    throw Arcade::Exception::ArcadeException(ERR_GRAPHICINIT);
   }
-  _widthScreen = 800;
-  _heightScreen = 600;
-  if (al_init_font_addon() == false) {
-    throw;
-  }
-  if (al_init_ttf_addon() == false) {
-    throw;
-  }
-  if (al_init_image_addon() == false) {
-    throw;
-  }
-  if (al_install_keyboard() == false) {
-    throw;
-  }
-  if (!(_display = al_create_display(800, 600))) {
-    throw;
-  }
-  if (!(_eventQueue = al_create_event_queue())) {
-    throw;
-  }
-  if (!(_keyboardEventSource = al_get_keyboard_event_source())) {
-    throw;
-  }
-  if (al_init_primitives_addon() == false) {
-    throw;
-  }
+  _widthScreen = DSPL_WIDTH;
+  _heightScreen = DSPL_HEIGHT;
   al_register_event_source(_eventQueue, _keyboardEventSource);
-  al_clear_to_color(al_map_rgb_f(1, 1, 0));
+  al_register_event_source(_eventQueue, al_get_timer_event_source(_timer));
+  _callback = callback;
+}
+
+void Allegro::run() {
+  if (!(_display = al_create_display(DSPL_WIDTH, DSPL_HEIGHT))) {
+    throw Arcade::Exception::ArcadeException(ERR_GRAPHICINIT);
+  }
+  // loopinp
+  al_clear_to_color(al_map_rgb(0,0,0));
+  al_flip_display();
+  _callback({
+    Arcade::EventType::RESIZE,
+    Arcade::KeyType::KEY_UNKNOWN,
+    0
+  });
+  al_start_timer(_timer);
   _isRunning = true;
-  while (_isRunning == true)
-  {
-    al_flip_display();
-    ALLEGRO_EVENT events;
-    al_wait_for_event(_eventQueue, &events);
-    if (events.type == ALLEGRO_EVENT_KEY_DOWN)
-    {
-      switch (events.keyboard.keycode)
-      {
-        case ALLEGRO_KEY_DOWN:
-          callback({
-            Arcade::EventType::KEY_PRESSED,
-            Arcade::KeyType::KEY_DOWN,
-            0
-          });
-          break;
-        case ALLEGRO_KEY_UP:
-          callback({
-            Arcade::EventType::KEY_PRESSED,
-            Arcade::KeyType::KEY_UP,
-            0
-          });
-          break;
-        case ALLEGRO_KEY_RIGHT:
-          callback({
-            Arcade::EventType::KEY_PRESSED,
-            Arcade::KeyType::KEY_RIGHT,
-            0
-          });
-          break;
-        case ALLEGRO_KEY_LEFT:
-          callback({
-            Arcade::EventType::KEY_PRESSED,
-            Arcade::KeyType::KEY_LEFT,
-            0
-          });
-          break;
-        case ALLEGRO_KEY_ESCAPE:
-          callback({
-            Arcade::EventType::KEY_PRESSED,
-            Arcade::KeyType::KEY_ESC,
-            0
-          });
-          break;
-      }
+  while (_isRunning) {
+    // event
+    ALLEGRO_EVENT event;
+    al_wait_for_event(_eventQueue, &event);
+    if (event.type == ALLEGRO_EVENT_TIMER) {
+      _callback({
+        Arcade::EventType::TICK,
+        Arcade::KeyType::KEY_UNKNOWN,
+        0
+      });
+    } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+      _handleEvent(event);
     }
   }
+  al_stop_timer(_timer);
 }
 
 void Allegro::close() {
   _isRunning = false;
   if (_eventQueue && _keyboardEventSource) {
     al_unregister_event_source(_eventQueue, _keyboardEventSource);
+    al_unregister_event_source(_eventQueue, al_get_timer_event_source(_timer));
   }
   if (_display) {
     al_destroy_display(_display);
@@ -101,37 +72,100 @@ void Allegro::update(Arcade::ObjectList objs) {
     return i1.elevation < i2.elevation;
   });
   std::for_each(objs.begin(), objs.end(), [=](Arcade::Object obj) {
-    drawObj(obj);
+    _drawObj(obj);
   });
-  al_update_display_region(0, 0, _widthScreen, _heightScreen);
+  al_flip_display();
 }
 
-void Allegro::drawObj(const Arcade::Object& obj) const {
+void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
+  Arcade::KeyType keyPressed = Arcade::KeyType::KEY_UNKNOWN;
+
+  // event serialization
+  switch (event.keyboard.keycode) {
+    case ALLEGRO_KEY_2:
+      keyPressed = Arcade::KeyType::KEY_TWO;
+      break;
+    case ALLEGRO_KEY_3:
+      keyPressed = Arcade::KeyType::KEY_THREE;
+      break;
+    case ALLEGRO_KEY_4:
+      keyPressed = Arcade::KeyType::KEY_FOUR;
+      break;
+    case ALLEGRO_KEY_5:
+      keyPressed = Arcade::KeyType::KEY_FIVE;
+      break;
+    case ALLEGRO_KEY_8:
+      keyPressed = Arcade::KeyType::KEY_EIGHT;
+      break;
+    case ALLEGRO_KEY_9:
+      keyPressed = Arcade::KeyType::KEY_NINE;
+      break;
+    case ALLEGRO_KEY_DOWN:
+      keyPressed = Arcade::KeyType::KEY_DOWN;
+      break;
+    case ALLEGRO_KEY_UP:
+      keyPressed = Arcade::KeyType::KEY_UP;
+      break;
+    case ALLEGRO_KEY_RIGHT:
+      keyPressed = Arcade::KeyType::KEY_RIGHT;
+      break;
+    case ALLEGRO_KEY_LEFT:
+      keyPressed = Arcade::KeyType::KEY_LEFT;
+      break;
+    case ALLEGRO_KEY_ESCAPE:
+      keyPressed = Arcade::KeyType::KEY_ESC;
+      break;
+    case ALLEGRO_KEY_ENTER:
+      keyPressed = Arcade::KeyType::KEY_ENTER;
+      break;
+  }
+  _callback({
+    Arcade::EventType::KEY_PRESSED,
+    keyPressed,
+    0
+  });
+}
+
+void Allegro::_drawObj(const Arcade::Object& obj) const {
   if (obj.backgroundColor >= 0)
-    drawButton(obj);
-  if (obj.imageName.empty() == false)
-    drawImage(obj);
-  if (obj.text.empty() == false)
-    drawText(obj);
+    _drawButton(obj);
+  if (!obj.imageName.empty())
+    _drawImage(obj);
+  if (!obj.text.empty())
+    _drawText(obj);
 }
 
-void Allegro::drawText(const Arcade::Object& obj) const {
-  ALLEGRO_FONT *font = al_load_font("../../ressource/font/SF.otf", 36, 0);
-  al_draw_text(font, al_map_rgb(255, 255, 255), (_widthScreen * (obj.position.first + obj.size.first / 2)) / 10000, (_heightScreen * (obj.position.second + obj.size.second / 2)) / 10000 - 18, ALLEGRO_ALIGN_CENTRE, obj.text.c_str());
+void Allegro::_drawText(const Arcade::Object& obj) const {
+  ALLEGRO_FONT *font = al_load_font(FONT_PATH, obj.fontSize, 0);
+
+  al_draw_text(font, al_map_rgb(255, 255, 255),
+    obj.position.first + (obj.size.first / 2),
+    obj.position.second + (obj.size.second / 2) - (obj.fontSize / 1.7),
+    ALLEGRO_ALIGN_CENTRE, obj.text.c_str());
   al_destroy_font(font);
 }
 
-void Allegro::drawButton(const Arcade::Object& obj) const {
+void Allegro::_drawButton(const Arcade::Object& obj) const {
   int red = (obj.backgroundColor & 0xff0000) >> 16;
   int green = (obj.backgroundColor & 0x00ff00) >> 8;
-  int blue = (obj.backgroundColor & 0x000000);
-  al_draw_filled_rectangle((_widthScreen * obj.position.first) / 10000, (_heightScreen * obj.position.second) / 10000, (_widthScreen * (obj.position.first + obj.size.first)) / 10000, (_heightScreen * (obj.position.second + obj.size.second)) / 10000, al_map_rgb(red, green, blue));
-  drawText(obj);
+  int blue = (obj.backgroundColor & 0x0000ff);
+
+  al_draw_filled_rectangle(obj.position.first,
+    obj.position.second, obj.position.first + obj.size.first,
+    obj.position.second + obj.size.second,
+    al_map_rgb(red, green, blue));
 }
 
-void Allegro::drawImage(const Arcade::Object& obj) const {
+void Allegro::_drawImage(const Arcade::Object& obj) const {
   ALLEGRO_BITMAP  *img = al_load_bitmap(obj.imageName.c_str());
-  al_draw_scaled_bitmap(img, 0, 0, al_get_bitmap_width(img), al_get_bitmap_height(img), (_widthScreen * obj.position.first) / 10000, (_heightScreen * obj.position.second) / 10000, (_widthScreen * obj.size.first) / 10000, (_heightScreen * obj.size.second) / 10000, 0);
-  al_flip_display();
+
+  float w = al_get_bitmap_width(img);
+  float h = al_get_bitmap_height(img);
+  al_draw_scaled_rotated_bitmap(img,
+    w / 2, h / 2,
+    obj.position.first + obj.size.first/2, obj.position.second + obj.size.second/2,
+    (float)obj.size.first / w,
+    (float)obj.size.second / h,
+    obj.imageRotation, 0);
   al_destroy_bitmap(img);
 }
