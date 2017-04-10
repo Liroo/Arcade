@@ -21,10 +21,12 @@ namespace Arcade {
     void setBackgroundColor(const int&);
     int getRotation() const;
     void setRotation(const int&);
+    std::vector<std::string> getRawImage() const;
+    void setRawImage(const std::vector<std::string>&);
     Object render();
 
   private:
-    Object _obj;
+    Object _object;
 
   };
 };

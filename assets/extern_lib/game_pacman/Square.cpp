@@ -3,63 +3,73 @@
 using namespace Arcade;
 
 Square::Square(const std::string &id) {
-  _obj.id = id;
-  _obj.backgroundColor = -1;
-  _obj.elevation = 20;
-  _obj.imageName = "";
-  _obj.imageRotation = 0.0;
+  _object.id = id;
+  _object.backgroundColor = -1;
+  _object.elevation = 20;
+  _object.imageName = "";
+  _object.imageRotation = 0.0;
+  _object.rawImage = {};
 }
 
 Square::Square(const std::pair<int, int> &pos, const std::pair<int, int> &size, const std::string &id) {
-  _obj.position = pos;
-  _obj.size = size;
-  _obj.id = id;
-  _obj.backgroundColor = -1;
-  _obj.elevation = 20;
-  _obj.imageName = "";
-  _obj.imageRotation = 0.0;
+  _object.position = pos;
+  _object.size = size;
+  _object.id = id;
+  _object.backgroundColor = -1;
+  _object.elevation = 20;
+  _object.imageName = "";
+  _object.imageRotation = 0.0;
+  _object.rawImage = {};
 }
 
 std::pair<int, int> Square::getPosition() const {
-  return _obj.position;
+  return _object.position;
 }
 
 void Square::setPosition(const std::pair<int, int> &pos) {
-  _obj.position = pos;
+  _object.position = pos;
 }
 
 std::pair<int, int> Square::getSize() const {
-  return _obj.size;
+  return _object.size;
 }
 
 void Square::setSize(const std::pair<int, int> &size) {
-  _obj.size = size;
+  _object.size = size;
 }
 
 std::string Square::getImage() const {
-  return _obj.imageName;
+  return _object.imageName;
 }
 
 void Square::setImage(const std::string &img) {
-  _obj.imageName = img;
+  _object.imageName = img;
 }
 
 int Square::getBackgroundColor() const {
-  return _obj.backgroundColor;
+  return _object.backgroundColor;
 }
 
 void Square::setBackgroundColor(const int &bg) {
-  _obj.backgroundColor = bg;
+  _object.backgroundColor = bg;
 }
 
 int Square::getRotation() const {
-  return _obj.imageRotation;
+  return _object.imageRotation;
 }
 
 void Square::setRotation(const int &rotation) {
-  _obj.imageRotation = rotation;
+  _object.imageRotation = rotation;
+}
+
+std::vector<std::string> Square::getRawImage() const {
+  return _object.rawImage;
+}
+
+void Square::setRawImage(const std::vector<std::string> &rawImage) {
+  _object.rawImage = rawImage;
 }
 
 Object Square::render() {
-  return _obj;
+  return _object;
 }
