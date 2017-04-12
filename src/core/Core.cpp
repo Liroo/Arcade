@@ -9,7 +9,9 @@
 
 using namespace Arcade;
 
-Core::Core() {}
+Core::Core():
+  _dlGame(DFL_ENTRY_NAME),
+  _dlGraphic(DFL_ENTRY_NAME) {}
 Core::~Core() {}
 
 bool Core::init(const std::string& libName) {
@@ -41,8 +43,10 @@ bool Core::init(const std::string& libName) {
 
   // setting index
   _availableLibIndex = std::distance(_availableLib.begin(), it);
-  _dlGraphic.reset(new LibLoader<IGraphic>(DFL_ENTRY_NAME));
-  _dlGame.reset(new LibLoader<AGames>(DFL_ENTRY_NAME));
+  _gameChanging = false;
+  _gameWorking = false;
+  _nextGame = NULL;
+  _nextGraphic = NULL;
   return true;
 }
 
@@ -51,17 +55,19 @@ int Core::run() {
   if (_loadGame() == -1 || _loadLib() == -1) {
     return 1;
   }
+  try {
+    _runGame();
+  } catch (const Arcade::Exception::ArcadeException &e) {
+    std::cout << e.what() << std::endl;
+    return 0;
+  }
   while (_isRunning) {
-    if (_game) {
-      try {
-        _runGame();
-      } catch (const Arcade::Exception::ArcadeException &e) {
-        std::cout << e.what() << std::endl;
-        return 0;
-      }
-    }
-    if (_graphic && _runLib() == -1) {
+    if (_runLib() == -1) {
       return 1;
+    }
+    _deleteLib();
+    if (_isRunning && _loadLib() == -1) {
+      _exit();
     }
   }
   return 0;
@@ -81,43 +87,19 @@ void Core::_iterateIndex(const DirectoryReader::DirectoryContent& libContent,
   }
 }
 
-int Core::_loadGame() {
-  if (_dlGame->isOpen()) {
-    _dlGame->closeLib();
-  }
-  _game.reset(_dlGame->openLib(_isMenu ? MENU_PATH :
-      _availableGame.at(_availableGameIndex)));
-  if (!_game) {
-    return -1;
-  }
-  return 0;
-}
-
 int Core::_loadLib() {
-  if (_dlGraphic->isOpen()) {
-    _dlGraphic->closeLib();
-  }
-  if (_graphic) {
-    _graphic->close();
-  }
-  _graphic.reset(_dlGraphic->openLib(_availableLib.at(_availableLibIndex)));
-  if (!_graphic) {
+  Arcade::IGraphic* graphic = _dlGraphic.openLib(_availableLib.at(_availableLibIndex));
+  if (!graphic) {
     return -1;
   }
+  _nextGraphic = graphic;
   return 0;
-}
-
-void Core::_runGame() {
-  if (_game) {
-    _game->start([this](const Event& event) -> void {
-      _handleEvent(event);
-    });
-  }
 }
 
 int Core::_runLib() {
+  _graphic.reset(_nextGraphic);
   try {
-    _graphic->init([this](const Event& event) -> void {
+    _graphic->init([=](const Event& event) -> void {
       _handleEvent(event);
     });
     _graphic->run();
@@ -126,6 +108,60 @@ int Core::_runLib() {
     return -1;
   }
 
+  return 0;
+}
+
+int Core::_deleteLib() {
+  if (!_graphic) {
+    return 0;
+  }
+  int i = 0;
+  for (; i < 10; i++) {
+    usleep(500);
+    if (_graphic->isDeletable()) {
+      break;
+    }
+  }
+  if (i == 10) {
+    _forceExit();
+  }
+  _graphic.reset(nullptr);
+  return 0;
+}
+
+int Core::_loadGame() {
+  Arcade::AGames* game = _dlGame.openLib(_isMenu ? MENU_PATH :
+    _availableGame.at(_availableGameIndex));
+  if (!game) {
+    return -1;
+  }
+  _nextGame = game;
+  return 0;
+}
+
+void Core::_runGame() {
+  _game.reset(_nextGame);
+  if (_game) {
+    _gameWorking = true;
+    _game->start();
+    _gameWorking = false;
+  }
+}
+
+int Core::_deleteGame() {
+  if (!_game) {
+    return 0;
+  }
+  int i = 0;
+  for (; i < 1000000; i++) {
+    if (!_gameWorking) {
+      break;
+    }
+  }
+  if (i == 1000000) {
+    _forceExit();
+  }
+  _game.reset(nullptr);
   return 0;
 }
 
@@ -154,16 +190,22 @@ void Core::_handleEvent(const Event& event) {
     case Arcade::EventType::UNKNOWN:
       std::clog << UNK_EVNT << std::endl;
       break;
+    default:
+      break;
   }
 }
 
 void Core::_handleTick() {
-  if (!_game || !_graphic) {
+  if (!_game || !_graphic || _gameChanging) {
     return;
   }
   // tick the game
-  ObjectList objects = _game->tick();
-  _graphic->update(objects);
+  _gameWorking = true;
+  GameEvent gEvent = _game->tick();
+  _gameWorking = false;
+  if (_graphic) {
+    _graphic->update(gEvent.objects);
+  }
 }
 
 // not so heavy fn
@@ -219,74 +261,84 @@ void Core::_handleKey(const Event& event) {
     }
     return;
   }
-  ObjectList objects = _game->handleEvent(event);
-  if (event.key != Arcade::KeyType::KEY_ENTER && _graphic) {
-    _graphic->update(objects);
+  if (_gameChanging) {
+    return;
+  }
+  _gameWorking = true;
+  GameEvent gEvent = _game->handleEvent(event);
+  _gameWorking = false;
+  switch (gEvent.type) {
+    case Arcade::EventType::DISPLAY:
+      if (_graphic) {
+        _graphic->update(gEvent.objects);
+      }
+      break;
+    case Arcade::EventType::PLAY:
+      _playMenu();
+      break;
+    case Arcade::EventType::EXIT:
+      _exit();
+      break;
+    default:
+      break;
   }
 }
 
 void Core::_handleResize() {
-  if (!_game || !_graphic) {
+  if (!_game || _gameChanging) {
     return;
   }
   // dumping of screen due to important changement on graphics
-  ObjectList objects = _game->dump();
-  _graphic->update(objects);
+  _gameWorking = true;
+  GameEvent gEvent = _game->dump();
+  _gameWorking = false;
+  if (_graphic) {
+    _graphic->update(gEvent.objects);
+  }
 }
 
 // Core event
 void Core::_changeLib(int offset) {
-  int indexCleat = _availableLib.size();
-  _iterateIndex(_availableLib, _availableLibIndex, offset);
-  while (indexCleat < 0) {
-    if (_loadLib() == 0) {
-      if (_graphic) {
-        _graphic->close();
-        int i = 0;
-        for (; i < 10; i++) {
-          usleep(500);
-          if (_graphic->canBeDeleted()) {
-            _graphic.reset(nullptr);
-          }
-        }
-        if (i == 10) {
-          _forceExit();
-        }
-      }
-      return;
-    }
-    _iterateIndex(_availableLib, _availableLibIndex, offset);
-    indexCleat -= 1;
+  if (offset == 0) {
+    return;
   }
-  std::cerr << ERR_NOMORELIBAVAILABLE << std::endl;
-  _exit();
+  int oldIndex = _availableLibIndex;
+  _iterateIndex(_availableLib, _availableLibIndex, offset);
+  if (oldIndex == _availableLibIndex) {
+    return ;
+  }
+  if (_graphic) {
+    _graphic->close();
+  }
 }
 
 void Core::_changeGame(int offset) {
-  if (_isMenu) {
+  if (offset == 0 || _isMenu) {
     return;
   }
-  int indexCleat = _availableGame.size();
+
+  _gameChanging = true;
+  int oldIndex = _availableGameIndex;
   _iterateIndex(_availableGame, _availableGameIndex, offset);
-  while (indexCleat < 0) {
-    if (_loadLib() == 0) {
-      if (_game) {
-        _game.reset(nullptr);
-        break;
-      }
-      return;
-    }
-    _iterateIndex(_availableGame, _availableGameIndex, offset);
-    indexCleat -= 1;
+
+  if (oldIndex == _availableGameIndex) {
+    return;
   }
-  std::cerr << ERR_NOMOREGAMEAVAILABLE << std::endl;
-  _exit();
+  _deleteGame();
+  if (_loadGame() == -1) {
+    _exit();
+    return;
+  }
+  _runGame();
+  _gameChanging = false;
 }
 
 void Core::_restartGame() {
-  if (_game) {
+  if (_game && !_gameChanging) {
     try {
+      _gameWorking = true;
       _game->reset();
+      _gameWorking = false;
     } catch (const Arcade::Exception::ArcadeException &e) {
       std::cout << e.what() << std::endl;
       _exit();
@@ -295,28 +347,28 @@ void Core::_restartGame() {
 }
 
 void Core::_startMenu() {
-  _isMenu = true;
-  if (_loadGame() == -1) {
-    std::cerr << ERR_MENUNOTAVAILABLE << std::endl;
-    _exit();
+  if (_isMenu) {
+    return;
   }
+  _isMenu = true;
+  _gameChanging = true;
+  _deleteGame();
+  _loadGame();
+  _runGame();
+  _gameChanging = false;
+
 }
 
 void Core::_playMenu() {
-  std::map<std::string, std::string> config = _game->dumpMemory();
-
-  std::string gameSelected = config.at("gameSelected");
-  auto gameIt = std::find(_availableGame.begin(), _availableGame.end(), gameSelected);
-  if (gameIt == _availableGame.end()) {
-    std::clog << WRN_GAMENOTAVAILABLE << std::endl;
-    _restartGame();
-    return;
+  if (_gameChanging) {
+    return ;
   }
-  _changeGame(std::distance(_availableGame.begin() + _availableGameIndex,
-    gameIt));
+  _gameWorking = true;
+  std::map<std::string, std::string> config = _game->dumpMemory();
+  _gameWorking = false;
 
   std::string libSelected = config.at("libSelected");
-  auto libIt = std::find(_availableLib.begin(), _availableLib.end(), gameSelected);
+  auto libIt = std::find(_availableLib.begin(), _availableLib.end(), libSelected);
   if (libIt == _availableLib.end()) {
     std::clog << WRN_LIBNOTAVAILABLE << std::endl;
     _restartGame();
@@ -325,23 +377,23 @@ void Core::_playMenu() {
   _changeLib(std::distance(_availableLib.begin() + _availableLibIndex,
     libIt));
 
+  std::string gameSelected = config.at("gameSelected");
+  auto gameIt = std::find(_availableGame.begin(), _availableGame.end(), gameSelected);
+  if (gameIt == _availableGame.end()) {
+    std::clog << WRN_GAMENOTAVAILABLE << std::endl;
+    _restartGame();
+    return;
+  }
   _isMenu = false;
+  _changeGame(std::distance(_availableGame.begin() + _availableGameIndex,
+    gameIt));
+
 }
 
 void Core::_exit() {
   _isRunning = false;
   if (_graphic) {
     _graphic->close();
-    int i = 0;
-    for (; i < 10; i++) {
-      usleep(500);
-      if (_graphic->canBeDeleted()) {
-        break;
-      }
-    }
-    if (i == 5) {
-      _forceExit();
-    }
   }
 }
 

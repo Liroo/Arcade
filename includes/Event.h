@@ -3,6 +3,7 @@
 
 # include <utility>
 # include <functional>
+# include "Object.h"
 
 namespace Arcade {
 
@@ -31,6 +32,7 @@ namespace Arcade {
     TICK,
 
     PLAY,
+    DISPLAY,
     EXIT,
 
     UNKNOWN = -1
@@ -45,6 +47,12 @@ namespace Arcade {
     // unknown key pressed
     int data;
   } Event;
+
+  typedef struct s_gameEvent {
+    // type event from game (could be PLAY, DISPLAY or EXIT)
+    EventType type;
+    ObjectList objects;
+  } GameEvent;
 
   // Callback definition used for graphics library
   typedef std::function<void(const Event &)> Callback;

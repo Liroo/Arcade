@@ -61,6 +61,8 @@ const buildLib = (file) => {
   } else if (process.argv[2] == 'reinstall') {
     const make = childProcess.spawnSync('make', ['-C', directoryInUse + file + '/', 're']);
     if (make.status != 0) {
+      console.log(make.stdout.toString('ascii'));
+      console.log(make.stderr.toString('ascii'));
       console.log('failed to make library, verify the lib!')
       console.log();
       return;

@@ -42,7 +42,7 @@ void Allegro::run() {
     Arcade::KeyType::KEY_UNKNOWN,
     0
   });
-  while (_isRunning) {
+  while (doesLooping()) {
     // event
     ALLEGRO_EVENT event;
     al_wait_for_event(_eventQueue, &event);
@@ -56,19 +56,26 @@ void Allegro::run() {
       _handleEvent(event);
     }
   }
+  al_stop_timer(_timer);
+  al_flush_event_queue(_eventQueue);
+  if (_eventQueue && _keyboardEventSource) {
+    al_destroy_event_queue(_eventQueue);
+  }
+  if (_display) {
+    al_destroy_display(_display);
+  }
   _isLooping = false;
 }
 
 void Allegro::close() {
-  al_stop_timer(_timer);
   if (_eventQueue && _keyboardEventSource) {
     al_unregister_event_source(_eventQueue, _keyboardEventSource);
-    al_unregister_event_source(_eventQueue, al_get_timer_event_source(_timer));
+  }
+  al_unregister_event_source(_eventQueue, al_get_timer_event_source(_timer));
+  if (_eventQueue) {
+    al_flush_event_queue(_eventQueue);
   }
   _isRunning = false;
-  if (_display) {
-    al_destroy_display(_display);
-  }
 }
 
 void Allegro::update(Arcade::ObjectList objs) {
@@ -86,8 +93,20 @@ void Allegro::update(Arcade::ObjectList objs) {
   _isDrawing = false;
 }
 
-bool Allegro::canBeDeleted() {
-  return !(_isDrawing & _isLooping);
+bool Allegro::isRunning() const {
+  return _isRunning || _isDrawing || _isLooping;
+}
+
+bool Allegro::isDeletable() const {
+  return !(_isDrawing || (_isLooping || _isRunning));
+}
+
+bool Allegro::isClosed() const {
+  return !_isLooping && !_isDrawing;
+}
+
+bool Allegro::doesLooping() const {
+  return _isRunning || _isDrawing;
 }
 
 void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
@@ -143,7 +162,7 @@ void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
   });
 }
 
-void Allegro::_drawObj(const Arcade::Object& obj) const {
+void Allegro::_drawObj(const Arcade::Object& obj) {
   if (!_isRunning) {
     return;
   }
@@ -156,7 +175,7 @@ void Allegro::_drawObj(const Arcade::Object& obj) const {
     _drawText(obj);
 }
 
-void Allegro::_drawText(const Arcade::Object& obj) const {
+void Allegro::_drawText(const Arcade::Object& obj) {
   ALLEGRO_FONT *font = al_load_font(FONT_PATH, obj.fontSize, 0);
 
   al_draw_text(font, al_map_rgb(255, 255, 255),
@@ -166,7 +185,7 @@ void Allegro::_drawText(const Arcade::Object& obj) const {
   al_destroy_font(font);
 }
 
-void Allegro::_drawButton(const Arcade::Object& obj) const {
+void Allegro::_drawButton(const Arcade::Object& obj) {
   int red = (obj.backgroundColor & 0xff0000) >> 16;
   int green = (obj.backgroundColor & 0x00ff00) >> 8;
   int blue = (obj.backgroundColor & 0x0000ff);
@@ -177,7 +196,7 @@ void Allegro::_drawButton(const Arcade::Object& obj) const {
     al_map_rgb(red, green, blue));
 }
 
-void Allegro::_drawImage(const Arcade::Object& obj) const {
+void Allegro::_drawImage(const Arcade::Object& obj) {
   ALLEGRO_BITMAP  *img = al_load_bitmap(obj.imageName.c_str());
 
   float w = al_get_bitmap_width(img);

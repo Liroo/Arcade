@@ -1,6 +1,6 @@
 # don't add to commit library .a and binary
 
-libGameTest.so
+lib_arcade_nibbler.so
 
 # don't even think to commit ~, #, tmp, obj files, etc...
 

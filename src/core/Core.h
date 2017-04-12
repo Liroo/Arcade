@@ -17,8 +17,8 @@
 # define ERR_NOMORELIBAVAILABLE "No more lib available, exit"
 # define ERR_NOMOREGAMEAVAILABLE "No more game available, exit"
 # define ERR_MENUNOTAVAILABLE "Menu is not available anymore, exit"
-# define WRN_LIBNOTAVAILABLE "This lib is not available anymore, refresh"
 # define WRN_GAMENOTAVAILABLE "This game is not available anymore, refresh"
+# define WRN_LIBNOTAVAILABLE "This lib is not available anymore, refresh"
 # define UNK_EVNT "Unknown event called"
 
 # define FATAL_ERROR "Fatal error, force exit, possible memory leak"
@@ -30,12 +30,6 @@ namespace Arcade {
   public:
     Core();
     ~Core();
-
-  private:
-    int _loadGame();
-    int _loadLib();
-    void _runGame();
-    int _runLib();
 
   private:
     void _iterateIndex(const DirectoryReader::DirectoryContent&,
@@ -67,12 +61,28 @@ namespace Arcade {
     void _forceExit();
 
   private:
+    int _loadGame();
+    void _runGame();
+    int _deleteGame();
+
+    int _loadLib();
+    int _runLib();
+    int _deleteLib();
+
+  private:
     // private library game and graphic
     bool _isMenu = true; // game is a menu
-    std::unique_ptr<LibLoader<AGames>> _dlGame;
+
+    LibLoader<AGames> _dlGame;
     std::unique_ptr<AGames> _game;
-    std::unique_ptr<LibLoader<IGraphic>> _dlGraphic;
+    AGames* _nextGame;
+
+    bool _gameChanging;
+    bool _gameWorking;
+
+    LibLoader<IGraphic> _dlGraphic;
     std::unique_ptr<IGraphic> _graphic;
+    IGraphic* _nextGraphic;
 
   private:
     bool _isRunning = true;

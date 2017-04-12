@@ -8,19 +8,19 @@ Arcade::Menu::Menu():
   _exit("exit"),
   _vader("vader", std::string(DIR_RESSOURCES) + "animated_vader/") {
   // pointer handler to handleEvent
-  _key[Arcade::KeyType::KEY_DOWN] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_DOWN] = [this]() -> GameEvent {
     return _keyDown();
   };
-  _key[Arcade::KeyType::KEY_UP] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_UP] = [this]() -> GameEvent {
     return _keyUp();
   };
-  _key[Arcade::KeyType::KEY_LEFT] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_LEFT] = [this]() -> GameEvent {
     return _keyLeft();
   };
-  _key[Arcade::KeyType::KEY_RIGHT] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_RIGHT] = [this]() -> GameEvent {
     return _keyRight();
   };
-  _key[Arcade::KeyType::KEY_ENTER] = [this]() -> ObjectList {
+  _key[Arcade::KeyType::KEY_ENTER] = [this]() -> GameEvent {
     return _keyEnter();
   };
 
@@ -41,7 +41,7 @@ bool  Arcade::Menu::_updateDirLib() {
   return true;
 }
 
-Arcade::ObjectList Arcade::Menu::start(const Callback& callback) {
+Arcade::GameEvent Arcade::Menu::start() {
   // init styles of objects
   _background.position = { 0, 0 };
   _background.size = { 1280, 720 };
@@ -92,12 +92,14 @@ Arcade::ObjectList Arcade::Menu::start(const Callback& callback) {
   appendListToList(_objects, _exit.render());
   appendObjectToList(_objects, _vader.render());
   appendObjectToList(_objects, _background);
-  _callback = callback;
   _timer.start();
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::tick() {
+Arcade::GameEvent Arcade::Menu::tick() {
   appendListToList(_objects, _play.render());
   appendListToList(_objects, _game.render());
   appendListToList(_objects, _graphic.render());
@@ -117,14 +119,20 @@ Arcade::ObjectList Arcade::Menu::tick() {
       break;
   };
   appendObjectToList(_objects, _vader.renderNext(_timer.getTick()));
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::dump() const {
-  return _objects;
+Arcade::GameEvent Arcade::Menu::dump() const {
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::handleEvent(const Event& event) {
+Arcade::GameEvent Arcade::Menu::handleEvent(const Event& event) {
   try {
     return _key.at(event.key)();
   } catch (std::out_of_range) {
@@ -149,7 +157,7 @@ std::map<std::string, std::string>  Arcade::Menu::dumpMemory() const {
   };
 }
 
-Arcade::ObjectList Arcade::Menu::_keyDown() {
+Arcade::GameEvent Arcade::Menu::_keyDown() {
   appendListToList(_objects, _play.render());
   appendListToList(_objects, _game.render());
   appendListToList(_objects, _graphic.render());
@@ -172,10 +180,13 @@ Arcade::ObjectList Arcade::Menu::_keyDown() {
       appendListToList(_objects, _exit.renderFocus());
       break;
   };
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::_keyUp() {
+Arcade::GameEvent Arcade::Menu::_keyUp() {
   appendListToList(_objects, _play.render());
   appendListToList(_objects, _game.render());
   appendListToList(_objects, _graphic.render());
@@ -198,42 +209,50 @@ Arcade::ObjectList Arcade::Menu::_keyUp() {
       appendListToList(_objects, _exit.renderFocus());
       break;
   };
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::_keyLeft() {
+Arcade::GameEvent Arcade::Menu::_keyLeft() {
   if (_cursorPosition == 1) {
     appendListToList(_objects, _game.renderPressedLeft());
   } else if (_cursorPosition == 2) {
     appendListToList(_objects, _graphic.renderPressedLeft());
   }
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::_keyRight() {
+Arcade::GameEvent Arcade::Menu::_keyRight() {
   if (_cursorPosition == 1) {
     appendListToList(_objects, _game.renderPressedRight());
   } else if (_cursorPosition == 2) {
     appendListToList(_objects, _graphic.renderPressedRight());
   }
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }
 
-Arcade::ObjectList Arcade::Menu::_keyEnter() {
+Arcade::GameEvent Arcade::Menu::_keyEnter() {
   if (_cursorPosition == 0) {
-    appendListToList(_objects, _play.renderPressed());
-    _callback({
+    return {
       Arcade::EventType::PLAY,
-      Arcade::KeyType::KEY_UNKNOWN,
-      0
-    });
+      {}
+    };
   } else if (_cursorPosition == 3) {
-    appendListToList(_objects, _exit.renderPressed());
-    _callback({
+    return {
       Arcade::EventType::EXIT,
-      Arcade::KeyType::KEY_UNKNOWN,
-      0
-    });
+      {}
+    };
   }
-  return _objects;
+  return {
+    Arcade::EventType::DISPLAY,
+    _objects
+  };
 }

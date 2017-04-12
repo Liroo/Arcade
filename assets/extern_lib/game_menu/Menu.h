@@ -32,25 +32,24 @@ namespace Arcade {
       DirectoryReader::DirectoryContent _availableGame;
 
     public:
-      virtual ObjectList start(const Callback&);
+      virtual GameEvent start();
       virtual void reset();
-      virtual ObjectList dump() const;
-      virtual ObjectList tick();
-      virtual ObjectList handleEvent(const Event&);
+      virtual GameEvent dump() const;
+      virtual GameEvent tick();
+      virtual GameEvent handleEvent(const Event&);
       virtual std::map<std::string, std::string> dumpMemory() const;
 
     public:
       bool _updateDirLib();
 
     private:
-      Callback _callback;
-      std::map<KeyType, std::function<ObjectList()>> _key;
+      std::map<KeyType, std::function<GameEvent()>> _key;
 
-      ObjectList _keyDown();
-      ObjectList _keyUp();
-      ObjectList _keyLeft();
-      ObjectList _keyRight();
-      ObjectList _keyEnter();
+      GameEvent _keyDown();
+      GameEvent _keyUp();
+      GameEvent _keyLeft();
+      GameEvent _keyRight();
+      GameEvent _keyEnter();
   };
 };
 

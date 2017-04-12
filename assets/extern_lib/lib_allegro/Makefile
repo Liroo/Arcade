@@ -4,7 +4,7 @@ OBJ_DIR = ./obj
 
 # General behavior
 
-NAME_BIN = libAllegro.so
+NAME_BIN = lib_arcade_allegro.so
 
 SRC_GENDIR = ./
 OBJ_GENDIR = $(OBJ_DIR)/

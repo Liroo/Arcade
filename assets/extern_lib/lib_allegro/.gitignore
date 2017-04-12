@@ -1,6 +1,6 @@
 # don't add to commit library .a and binary
 
-libAllegro.so
+lib_arcade_allegro.so
 
 # don't even think to commit ~, #, tmp, obj files, etc...
 

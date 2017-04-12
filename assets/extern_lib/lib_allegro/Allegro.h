@@ -26,7 +26,11 @@ class Allegro: public Arcade::IGraphic {
     virtual void close();
     virtual void update(std::vector<Arcade::Object>);
 
-    virtual bool canBeDeleted();
+    virtual bool isRunning() const;
+
+    virtual bool isDeletable() const;
+    virtual bool isClosed() const;
+    bool doesLooping() const;
 
   private:
     bool _isDrawing;
@@ -36,10 +40,10 @@ class Allegro: public Arcade::IGraphic {
     void _handleEvent(const ALLEGRO_EVENT&);
 
   private:
-    void _drawObj(const Arcade::Object&) const;
-    void _drawText(const Arcade::Object&) const;
-    void _drawButton(const Arcade::Object&) const;
-    void _drawImage(const Arcade::Object&) const;
+    void _drawObj(const Arcade::Object&);
+    void _drawText(const Arcade::Object&);
+    void _drawButton(const Arcade::Object&);
+    void _drawImage(const Arcade::Object&);
 
   private:
     Arcade::Callback _callback;
