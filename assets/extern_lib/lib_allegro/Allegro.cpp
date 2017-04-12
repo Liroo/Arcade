@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cctype>
+
 #include "Allegro.h"
 #include "exceptions/ArcadeException.hpp"
 
@@ -64,6 +66,9 @@ void Allegro::run() {
   if (_display) {
     al_destroy_display(_display);
   }
+  for (auto it = _imageCache.begin(); it < _imageCache.end(); it++) {
+    al_destroy_bitmap((*it).image);
+  }
   _isLooping = false;
 }
 
@@ -113,7 +118,6 @@ void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
   if (!_isRunning) {
     return;
   }
-
   Arcade::KeyType keyPressed = Arcade::KeyType::KEY_UNKNOWN;
 
   // event serialization
@@ -154,11 +158,14 @@ void Allegro::_handleEvent(const ALLEGRO_EVENT& event) {
     case ALLEGRO_KEY_ENTER:
       keyPressed = Arcade::KeyType::KEY_ENTER;
       break;
+    default:
+      keyPressed = Arcade::KeyType::KEY_UNKNOWN;
+      break;
   }
   _callback({
     Arcade::EventType::KEY_PRESSED,
     keyPressed,
-    0
+    event.keyboard.keycode
   });
 }
 
@@ -197,15 +204,48 @@ void Allegro::_drawButton(const Arcade::Object& obj) {
 }
 
 void Allegro::_drawImage(const Arcade::Object& obj) {
-  ALLEGRO_BITMAP  *img = al_load_bitmap(obj.imageName.c_str());
+  ImageCacheSystem cacheItem = _getImageFromCache(obj);
+  ALLEGRO_BITMAP* image = cacheItem.image;
 
-  float w = al_get_bitmap_width(img);
-  float h = al_get_bitmap_height(img);
-  al_draw_scaled_rotated_bitmap(img,
+  float w = al_get_bitmap_width(image);
+  float h = al_get_bitmap_height(image);
+  al_draw_scaled_rotated_bitmap(image,
     w / 2, h / 2,
     obj.position.first + obj.size.first/2, obj.position.second + obj.size.second/2,
     (float)obj.size.first / w,
     (float)obj.size.second / h,
     obj.imageRotation, 0);
-  al_destroy_bitmap(img);
+  if (!cacheItem.isCached) {
+    al_destroy_bitmap(image);
+  }
+}
+
+Allegro::ImageCacheSystem Allegro::_getImageFromCache(const Arcade::Object& obj) {
+  std::string idTrimed = obj.id;
+  if (isdigit(idTrimed[idTrimed.size() - 1])) {
+    idTrimed.erase(idTrimed.find_last_of(':'), idTrimed.size() - 1);
+    auto it = std::find_if(_imageCache.begin(), _imageCache.end(),
+      [=](ImageCacheSystem item) -> bool {
+        if (idTrimed == item.id) {
+          return true;
+        }
+        return false;
+      });
+    if (it == _imageCache.end()) {
+      ImageCacheSystem newCache = {
+        idTrimed,
+        al_load_bitmap(obj.imageName.c_str()),
+        true
+      };
+       _imageCache.push_back(newCache);
+       return newCache;
+    } else {
+      return (*it);
+    }
+  }
+  return {
+    "",
+    al_load_bitmap(obj.imageName.c_str()),
+    false
+  };
 }

@@ -46,6 +46,15 @@ class Allegro: public Arcade::IGraphic {
     void _drawImage(const Arcade::Object&);
 
   private:
+    typedef struct s_imageCacheSystem {
+      std::string id;
+      ALLEGRO_BITMAP* image;
+      bool isCached;
+    } ImageCacheSystem;
+    std::vector<ImageCacheSystem> _imageCache;
+    ImageCacheSystem _getImageFromCache(const Arcade::Object&);
+
+  private:
     Arcade::Callback _callback;
     bool _isRunning;
     int _widthScreen;

@@ -4,11 +4,15 @@
 # include <vector>
 # include <utility>
 # include "AGames.h"
+# include "components/Button.h"
+# include "components/AnimatedObject.h"
+
+# define ERR_SNAKE_INIT "Snake failed to init"
 
 # define MAP_WIDTH 30
 # define MAP_HEIGHT 30
 
-# define SQUARE_BORDER_SIZE 18
+# define SQUARE_BORDER_SIZE 20
 
 namespace Arcade {
   class Snake: public AGames {
@@ -25,7 +29,16 @@ namespace Arcade {
       virtual std::map<std::string, std::string> dumpMemory() const;
 
     private:
+      Object _background;
+      Object _boardWall;
+      Object _board;
+      Button _titleButton;
+      Button _timeButton;
+      Button _scoreButton;
+      AnimatedObject _car;
       ObjectList _objects;
+      void _serializeSnake();
+      void _serializeFruit();
 
     // only game logic
     private:
@@ -33,16 +46,21 @@ namespace Arcade {
       bool _isPause;
       int _score;
 
-      Arcade::KeyType _currentMovement;
-      Arcade::KeyType _lastMovement;
-      std::vector<std::pair<float, float>> _snake;
+      Arcade::KeyType _lastKey;
+      Arcade::KeyType _currentKey;
+      std::pair<int, int> _movement;
+      std::pair<int, int> _nextMovement;
+      int _toIncrease;
+      std::vector<std::pair<int, int>> _snake;
       std::vector<std::pair<int, int>> _fruit;
       int _lastTime;
       int _speed;
       void _move();
 
-      int _foundCount;
+      int _fruitCount;
       void _spawnFruit();
+
+      std::vector<std::pair<int, int>> _emptyMap;
   };
 };
 

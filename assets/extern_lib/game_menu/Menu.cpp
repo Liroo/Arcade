@@ -134,6 +134,7 @@ Arcade::GameEvent Arcade::Menu::dump() const {
 
 Arcade::GameEvent Arcade::Menu::handleEvent(const Event& event) {
   try {
+    std::cout << std::to_string(event.data) << std::endl;
     return _key.at(event.key)();
   } catch (std::out_of_range) {
     return {};
