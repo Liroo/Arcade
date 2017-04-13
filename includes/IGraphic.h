@@ -17,7 +17,7 @@ namespace Arcade{
       virtual void init(const Callback&) = 0;
       virtual void run() = 0;
       virtual void close() = 0;
-      virtual void update(std::vector<Arcade::Object>) = 0;
+      virtual void update(ObjectList) = 0;
 
       virtual bool isRunning() const = 0;
       virtual bool isDeletable() const = 0;

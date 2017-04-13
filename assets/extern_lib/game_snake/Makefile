@@ -30,11 +30,6 @@ RM		= rm -rf
 
 all: $(NAME_BIN)
 
-debug: re
-	$(CC) -o mainTest mainTest.cpp $(CFLAGS) \
-		-Wl,-rpath,/mnt/hgfs/Epitech/CPP/Arcade/shared_lib/,-rpath,/mnt/hgfs/Epitech/CPP/Arcade/assets/extern_lib/game_snake/ \
-		-L./ lib_arcade_nibbler.so $(LDFLAGS)
-
 install:
 	cp $(NAME_BIN) $(ROOT_PROJECT)games/
 

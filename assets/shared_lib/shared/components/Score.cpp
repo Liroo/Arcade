@@ -87,7 +87,7 @@ std::string getPersonalScoreForGame(const std::string& game, const std::string& 
   }
   std::stable_sort(playerScore.begin(), playerScore.end(),
     [](int i1, int i2) -> bool {
-      return i1 < i2;
+      return i1 > i2;
     });
   if (playerScore.size() > 0) {
     return pseudo + ":" + std::to_string(playerScore[0]);
