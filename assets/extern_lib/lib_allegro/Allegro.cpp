@@ -92,7 +92,9 @@ void Allegro::update(Arcade::ObjectList objs) {
     return i1.elevation < i2.elevation;
   });
   std::for_each(objs.begin(), objs.end(), [=](Arcade::Object obj) {
-    _drawObj(obj);
+    if (obj.elevation > 0) {
+      _drawObj(obj);
+    }
   });
   al_flip_display();
   _isDrawing = false;
@@ -184,11 +186,20 @@ void Allegro::_drawObj(const Arcade::Object& obj) {
 
 void Allegro::_drawText(const Arcade::Object& obj) {
   ALLEGRO_FONT *font = al_load_font(FONT_PATH, obj.fontSize, 0);
+  int lineCount = std::count(obj.text.begin(), obj.text.end(), '\n');
 
-  al_draw_text(font, al_map_rgb(255, 255, 255),
-    obj.position.first + (obj.size.first / 2),
-    obj.position.second + (obj.size.second / 2) - (obj.fontSize / 1.7),
-    ALLEGRO_ALIGN_CENTRE, obj.text.c_str());
+  if (lineCount > 0) {
+    al_draw_multiline_text(font, al_map_rgb(255, 255, 255),
+      obj.position.first + 10,
+      obj.position.second + 10,
+      obj.size.first, obj.size.second / lineCount,
+      ALLEGRO_ALIGN_LEFT, obj.text.c_str());
+  } else {
+    al_draw_text(font, al_map_rgb(255, 255, 255),
+      obj.position.first + (obj.size.first / 2),
+      obj.position.second + (obj.size.second / 2) - (obj.fontSize / 1.7),
+      ALLEGRO_ALIGN_CENTRE, obj.text.c_str());
+  }
   al_destroy_font(font);
 }
 

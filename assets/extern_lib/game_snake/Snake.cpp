@@ -89,7 +89,9 @@ Snake::~Snake() {
   _timer.stop();
 }
 
-GameEvent Snake::start() {
+GameEvent Snake::start(const std::string& libName, const std::string& pseudo) {
+  _pseudo = pseudo;
+  _libName = libName;
   _timer.start();
   std::srand(std::time(0));
 
@@ -147,6 +149,8 @@ GameEvent Snake::tick() {
     + std::to_string(_timer.getTick() / 1000 % 60) );
   if (_gameOver) {
     _timeButton.setText("GAME OVER");
+  } else if (_isPause) {
+    _timeButton.setText("PAUSE");
   }
   appendListToList(_objects, _timeButton.render());
   _scoreButton.setText(std::to_string(_score));
@@ -245,9 +249,21 @@ GameEvent Snake::handleEvent(const Event& event) {
         _nextMovement = { -1, 0 };
       }
       break;
+    case Arcade::KeyType::KEY_UNKNOWN:
+      if (event.data == 16) {
+        if (_isPause) {
+          _timer.resume();
+          _isPause = false;
+        } else {
+          _timer.pause();
+          _isPause = true;
+        }
+      }
+      break;
     default:
       break;
   };
+
   return {
     Arcade::EventType::DISPLAY,
     _objects

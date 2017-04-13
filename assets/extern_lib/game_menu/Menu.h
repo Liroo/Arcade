@@ -17,27 +17,38 @@ namespace Arcade {
       virtual ~Menu();
 
     private:
+      DirectoryReader::DirectoryContent _availableLib;
+      DirectoryReader::DirectoryContent _availableGame;
+
+    public:
+      virtual GameEvent start(const std::string&, const std::string&);
+      virtual void reset();
+      virtual GameEvent dump() const;
+      virtual GameEvent tick();
+      virtual GameEvent handleEvent(const Event&);
+      virtual std::map<std::string, std::string> dumpMemory() const;
+
+    private:
       Button _play;
+      Button _pseudo;
+      std::string _inputPseudo;
       Carroussel _game;
       Carroussel _graphic;
       Button _exit;
       AnimatedObject _vader;
       Object _background;
 
+      Object _backgroundPopUp;
+      Object _arrowPopUp;
+      Button _personalScore;
+      Button _scores;
+      Button _availableLibPopUp;
+
       int _cursorPosition;
       ObjectList _objects;
 
-    private:
-      DirectoryReader::DirectoryContent _availableLib;
-      DirectoryReader::DirectoryContent _availableGame;
-
-    public:
-      virtual GameEvent start();
-      virtual void reset();
-      virtual GameEvent dump() const;
-      virtual GameEvent tick();
-      virtual GameEvent handleEvent(const Event&);
-      virtual std::map<std::string, std::string> dumpMemory() const;
+      void _render();
+      void _renderPopUp();
 
     public:
       bool _updateDirLib();
@@ -50,6 +61,8 @@ namespace Arcade {
       GameEvent _keyLeft();
       GameEvent _keyRight();
       GameEvent _keyEnter();
+
+      GameEvent _handleInput(const Event&);
   };
 };
 

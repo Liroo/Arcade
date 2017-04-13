@@ -22,7 +22,7 @@ namespace Arcade {
     KEY_RIGHT,
     KEY_ENTER, // used for menu
 
-    KEY_UNKNOWN = -1,
+    KEY_UNKNOWN,
   } KeyType;
 
   // refer to Event structure

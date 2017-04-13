@@ -44,6 +44,7 @@ namespace Arcade {
       ObjectList render();
       ObjectList renderFocus();
       ObjectList renderPressed();
+      ObjectList renderHidden();
 
     private:
       Object _background;

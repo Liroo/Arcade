@@ -84,6 +84,9 @@ namespace Arcade {
     std::unique_ptr<IGraphic> _graphic;
     IGraphic* _nextGraphic;
 
+    std::string _currentPseudo;
+    std::string _currentGame;
+
   private:
     bool _isRunning = true;
   };

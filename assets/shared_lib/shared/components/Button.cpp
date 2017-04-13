@@ -7,7 +7,7 @@ Button::Button(const std::string& id) {
   _shadow.id = id + ":shadow";
   _background.elevation = 11;
   _shadow.elevation = 10;
-  _fontSize = 36;
+  _fontSize = 24;
 }
 
 Button::Button(const std::pair<int, int>& size,
@@ -17,7 +17,7 @@ Button::Button(const std::pair<int, int>& size,
   _shadow.id = id + ":shadow";
   _background.elevation = 11;
   _shadow.elevation = 10;
-  _fontSize = 36;
+  _fontSize = 24;
   _size = size;
   _position = position;
 }
@@ -85,6 +85,10 @@ ObjectList Button::render() {
     _size.first,
     (87 * _size.second) / 100 // 87% or width
   };
+
+  _background.elevation = 11;
+  _shadow.elevation = 10;
+
   // background object
   _background.position = _position;
   _background.size = bgSize;
@@ -113,6 +117,10 @@ ObjectList Button::renderFocus() {
     _size.first,
     (87 * _size.second) / 100 // 87% or width
   };
+
+  _background.elevation = 11;
+  _shadow.elevation = 10;
+
   // background object
   _background.position = _position;
   _background.size = bgSize;
@@ -141,6 +149,10 @@ ObjectList Button::renderPressed() {
     _size.first,
     (94 * _size.second) / 100 // 87% or width
   };
+
+  _background.elevation = 11;
+  _shadow.elevation = 10;
+
   // background object
   _background.position = _position;
   _background.size = bgSize;
@@ -158,6 +170,15 @@ ObjectList Button::renderPressed() {
     _size.second - bgSize.second
   };
   _shadow.backgroundColor = _shadowColor;
+  return ObjectList({
+    _background,
+    _shadow
+  });
+}
+
+ObjectList Button::renderHidden() {
+  _background.elevation = -1;
+  _shadow.elevation = -1;
   return ObjectList({
     _background,
     _shadow

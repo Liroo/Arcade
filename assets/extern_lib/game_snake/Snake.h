@@ -21,12 +21,16 @@ namespace Arcade {
       virtual ~Snake();
 
     public:
-      virtual GameEvent start();
+      virtual GameEvent start(const std::string&, const std::string&);
       virtual void reset();
       virtual GameEvent dump() const;
       virtual GameEvent tick();
       virtual GameEvent handleEvent(const Event&);
       virtual std::map<std::string, std::string> dumpMemory() const;
+
+    private:
+      std::string _pseudo;
+      std::string _libName;
 
     private:
       Object _background;

@@ -18,8 +18,9 @@ namespace Arcade {
     /*
       start:
       function for init and start the game
+      (gameName, pseudo) // used for score
     */
-    virtual GameEvent start() = 0;
+    virtual GameEvent start(const std::string&, const std::string&) = 0;
     /*
       reset:
       function for reset the memory of the game

@@ -143,7 +143,7 @@ void Core::_runGame() {
   _game.reset(_nextGame);
   if (_game) {
     _gameWorking = true;
-    _game->start();
+    _game->start(_currentGame, _currentPseudo);
     _gameWorking = false;
   }
 }
@@ -350,13 +350,17 @@ void Core::_startMenu() {
   if (_isMenu) {
     return;
   }
-  _isMenu = true;
+
   _gameChanging = true;
+  _isMenu = true;
   _deleteGame();
-  _loadGame();
+  _availableGameIndex = -1;
+  if (_loadGame() == -1) {
+    _exit();
+    return;
+  }
   _runGame();
   _gameChanging = false;
-
 }
 
 void Core::_playMenu() {
@@ -387,6 +391,9 @@ void Core::_playMenu() {
   _isMenu = false;
   _changeGame(std::distance(_availableGame.begin() + _availableGameIndex,
     gameIt));
+
+  _currentGame = gameSelected.substr(6);
+  _currentPseudo = config.at("pseudo");
 
 }
 
