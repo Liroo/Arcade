@@ -6,46 +6,66 @@
 
 #include "Score.h"
 
-using namespace Arcade;
-
-std::vector<std::pair<std::string, int>> Arcade::Score::getBetterScoresForGame(const std::string& game) {
+std::string getBetterScoresForGame(const std::string& game) {
   std::vector<std::string> tmpScore;
 
-  std::ifstream ifs("./ressource/.arcade_scores");
+  std::ifstream ifs;
+  ifs.open("./assets/ressource/.arcade_scores", std::ios::in);
+  if (!ifs.is_open()) {
+    std::cerr << WRN_SCORE << std::endl;
+    return "";
+  }
   std::stringstream ss;
   ss << ifs.rdbuf();
   ifs.close();
 
   std::string item;
   while (std::getline(ss, item, '\n')) {
+    if (!item.empty()) {
       tmpScore.push_back(item);
+    }
   }
+
 
   std::vector<std::pair<std::string, int>> gameScore;
   for (auto it = tmpScore.begin(); it < tmpScore.end(); it++) {
-    if ((*it).compare(0, game.length(), game) == 0) {
+    if ((*it).size() >= game.size() && (*it).compare(0, game.size(), game) == 0) {
       std::string score = (*it).substr(game.size() + 1);
       int idx = score.find(':');
-      gameScore.push_back({
-        score.substr(0, idx - 1),
+      gameScore.push_back(std::pair<std::string, int>({
+        score.substr(0, idx),
         std::stoi(score.substr(idx + 1))
-      });
+      }));
     }
   }
   std::stable_sort(gameScore.begin(), gameScore.end(),
     [](std::pair<std::string, int> i1, std::pair<std::string, int> i2) -> bool {
-      return i1.second < i2.second;
+      return i1.second > i2.second;
     });
-  if (gameScore.size() > 5) {
-    gameScore.erase(gameScore.begin() + 5, gameScore.end());
+
+  std::string finalScore;
+  int i = 0;
+  while (i < (int)gameScore.size() && i < 5) {
+    finalScore += gameScore[i].first + " : " + std::to_string(gameScore[i].second) + "\n";
+    i++;
   }
-  return gameScore;
+  while (i < 5) {
+    finalScore += "0\n";
+    i++;
+  }
+
+  return finalScore;
 }
 
-int Arcade::Score::getPersonalScoreForGame(const std::string& game, const std::string& pseudo) {
+std::string getPersonalScoreForGame(const std::string& game, const std::string& pseudo) {
   std::vector<std::string> tmpScore;
 
-  std::ifstream ifs("./ressource/.arcade_scores");
+  std::ifstream ifs;
+  ifs.open("./assets/ressource/.arcade_scores", std::ios::in);
+  if (!ifs.is_open()) {
+    std::cerr << WRN_SCORE << std::endl;
+    return "";
+  }
   std::stringstream ss;
   ss << ifs.rdbuf();
   ifs.close();
@@ -70,13 +90,13 @@ int Arcade::Score::getPersonalScoreForGame(const std::string& game, const std::s
       return i1 < i2;
     });
   if (playerScore.size() > 0) {
-    return playerScore[0];
+    return pseudo + ":" + std::to_string(playerScore[0]);
   }
-  return 0;
+  return "";
 }
 
-void Arcade::Score::setScoreForGame(const std::string& game, const std::string& pseudo, int score) {
-  std::ofstream out("./ressource/.arcade_scores");
+void setScoreForGame(const std::string& game, const std::string& pseudo, int score) {
+  std::ofstream out("./assets/ressource/.arcade_scores", std::ios_base::app);
   std::string finalScore;
   finalScore = game + ":" + pseudo + ":" + std::to_string(score);
   out << finalScore << std::endl;

@@ -7,6 +7,7 @@
 #include <iomanip>
 
 # include "exceptions/ArcadeException.hpp"
+# include "components/Score.h"
 
 using namespace Arcade;
 
@@ -90,7 +91,7 @@ Snake::~Snake() {
 }
 
 GameEvent Snake::start(const std::string& libName, const std::string& pseudo) {
-  _pseudo = pseudo;
+  _pseudo = pseudo.empty() ? "noname" : pseudo;
   _libName = libName;
   _timer.start();
   std::srand(std::time(0));
@@ -311,6 +312,7 @@ void Snake::_move() {
   }
   auto doesTouch = std::find(_snake.begin() + 1, _snake.end(), _snake[0]);
   if (doesTouch != _snake.end()) {
+    setScoreForGame(_libName, _pseudo, _score);
     _gameOver = true;
     return;
   }
@@ -333,6 +335,7 @@ void Snake::_move() {
   }
   if (_snake[0].first < 0 || _snake[0].first >= MAP_WIDTH
     || _snake[0].second < 0 || _snake[0].second >= MAP_HEIGHT) {
+      setScoreForGame(_libName, _pseudo, _score);
       _gameOver = true;
     }
   _currentKey = _lastKey;

@@ -72,7 +72,7 @@ Arcade::GameEvent Arcade::Menu::start(const std::string& libName, const std::str
   _personalScore.setPosition({ 508, 84 });
   _personalScore.setBackgroundColor(0xACA8A8);
   _personalScore.setShadowColor(0x726B6B);
-  _personalScore.setFontSize(20);
+  _personalScore.setFontSize(28);
 
   _scores.setSize({ 254, 225 });
   _scores.setPosition({ 516, 192 });
@@ -138,6 +138,7 @@ Arcade::GameEvent Arcade::Menu::start(const std::string& libName, const std::str
   appendListToList(_objects, _exit.render());
   appendObjectToList(_objects, _vader.render());
   appendObjectToList(_objects, _background);
+  _updatePopUpText();
   _timer.start();
   return {
     Arcade::EventType::DISPLAY,
@@ -176,6 +177,45 @@ Arcade::GameEvent Arcade::Menu::handleEvent(const Event& event) {
   }
 }
 
+void Arcade::Menu::_updatePopUpText() {
+  if (_cursorPosition == 2) {
+    // availableLib
+    std::string buffer;
+    for (auto it = _availableLib.begin(); it < _availableLib.end(); it++) {
+      if (*it == _graphic.getTextLayout()) {
+        buffer += "> ";
+      } else {
+        buffer += "   ";
+      }
+      buffer += *it + "\n";
+    }
+    _availableLibPopUp.setText(buffer);
+  } else if (_cursorPosition == 1) {
+    // availableGame
+    std::string buffer;
+    for (auto it = _availableGame.begin(); it < _availableGame.end(); it++) {
+      if (*it == _game.getTextLayout()) {
+        buffer += "> ";
+      } else {
+        buffer += "   ";
+      }
+      buffer += *it + "\n";
+    }
+    _availableLibPopUp.setText(buffer);
+    // persoScore
+    std::string personalScore = getPersonalScoreForGame(
+      _game.getTextLayout(),
+      _inputPseudo);
+    _personalScore.setText(personalScore);
+    // scoreboard
+
+    std::string bestScore;
+    bestScore = getBetterScoresForGame(_game.getTextLayout());
+
+    _scores.setText(bestScore);
+  }
+}
+
 void Arcade::Menu::_render() {
   // basic rendering
   appendListToList(_objects, _play.render());
@@ -207,23 +247,6 @@ void Arcade::Menu::_renderPopUp() {
     _availableLibPopUp.setPosition({ 516, 424 });
     _availableLibPopUp.setSize({ 254, 20 + ((_availableGame.size()) * 60) });
 
-    std::string buffer;
-    for (auto it = _availableGame.begin(); it < _availableGame.end(); it++) {
-      if (*it == _game.getTextLayout()) {
-        buffer += "> ";
-      } else {
-        buffer += "   ";
-      }
-      buffer += *it + "\n";
-    }
-    _availableLibPopUp.setText(buffer);
-
-    if (!_inputPseudo.empty()) {
-      std::string game = _game.getTextLayout();
-      int personalScore = Arcade::Score::getPersonalScoreForGame(game, _inputPseudo);
-      _personalScore.setText(_inputPseudo + " : " + std::string(std::to_string(personalScore)));
-    }
-
     _backgroundPopUp.size = { 297, 380 + _availableLibPopUp.getSize().second };
     _backgroundPopUp.position = { 495, 64 };
     _backgroundPopUp.elevation = 7;
@@ -240,17 +263,6 @@ void Arcade::Menu::_renderPopUp() {
     _availableLibPopUp.setPosition({ 516, _backgroundPopUp.position.second + 20 });
     _arrowPopUp.position = { 757, 457 };
     _arrowPopUp.elevation = 8;
-
-    std::string buffer;
-    for (auto it = _availableLib.begin(); it < _availableLib.end(); it++) {
-      if (*it == _graphic.getTextLayout()) {
-        buffer += "> ";
-      } else {
-        buffer += "   ";
-      }
-      buffer += *it + "\n";
-    }
-    _availableLibPopUp.setText(buffer);
 
     appendListToList(_objects, _availableLibPopUp.render());
     appendListToList(_objects, _personalScore.renderHidden());
@@ -275,6 +287,7 @@ Arcade::GameEvent Arcade::Menu::_handleInput(const Event& e) {
       _inputPseudo.pop_back();
     }
   }
+  _updatePopUpText();
   return {
     Arcade::EventType::DISPLAY,
     _objects
@@ -292,6 +305,7 @@ void Arcade::Menu::reset() {
   for (auto it = _availableLib.begin(); it < _availableLib.end(); it++) {
     *it = (*it).substr(4);
   }
+  _updatePopUpText();
   _timer.reset();
   _game.setTextList(_availableGame);
   _graphic.setTextList(_availableLib);
@@ -329,6 +343,7 @@ Arcade::GameEvent Arcade::Menu::_keyDown() {
       appendListToList(_objects, _exit.renderFocus());
       break;
   };
+  _updatePopUpText();
   return {
     Arcade::EventType::DISPLAY,
     _objects
@@ -358,6 +373,7 @@ Arcade::GameEvent Arcade::Menu::_keyUp() {
       appendListToList(_objects, _exit.renderFocus());
       break;
   };
+  _updatePopUpText();
   return {
     Arcade::EventType::DISPLAY,
     _objects
@@ -370,6 +386,7 @@ Arcade::GameEvent Arcade::Menu::_keyLeft() {
   } else if (_cursorPosition == 2) {
     appendListToList(_objects, _graphic.renderPressedLeft());
   }
+  _updatePopUpText();
   return {
     Arcade::EventType::DISPLAY,
     _objects
@@ -382,6 +399,7 @@ Arcade::GameEvent Arcade::Menu::_keyRight() {
   } else if (_cursorPosition == 2) {
     appendListToList(_objects, _graphic.renderPressedRight());
   }
+  _updatePopUpText();
   return {
     Arcade::EventType::DISPLAY,
     _objects

@@ -47,7 +47,7 @@ void Allegro::run() {
   while (doesLooping()) {
     // event
     ALLEGRO_EVENT event;
-    al_wait_for_event(_eventQueue, &event);
+    al_get_next_event(_eventQueue, &event);
     if (event.type == ALLEGRO_EVENT_TIMER) {
       _callback({
         Arcade::EventType::TICK,

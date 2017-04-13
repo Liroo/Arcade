@@ -4,17 +4,10 @@
 # include <vector>
 # include <utility>
 
-namespace Arcade {
-  class Score {
-    public:
-      Score() {}
-      ~Score() {}
+# define WRN_SCORE "Score failed to load, there will be no score"
 
-    public:
-      static std::vector<std::pair<std::string, int>> getBetterScoresForGame(const std::string&);
-      static int getPersonalScoreForGame(const std::string&, const std::string&);
-      static void setScoreForGame(const std::string&, const std::string&, int);
-  };
-};
+std::string getBetterScoresForGame(const std::string&);
+std::string getPersonalScoreForGame(const std::string&, const std::string&);
+void setScoreForGame(const std::string&, const std::string&, int);
 
 #endif

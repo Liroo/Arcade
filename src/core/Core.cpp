@@ -391,12 +391,10 @@ void Core::_playMenu() {
     return;
   }
   _isMenu = false;
-  _changeGame(std::distance(_availableGame.begin() + _availableGameIndex,
-    gameIt));
-
   _currentGame = gameSelected.substr(6);
   _currentPseudo = config.at("pseudo");
-
+  _changeGame(std::distance(_availableGame.begin() + _availableGameIndex,
+    gameIt));
 }
 
 void Core::_exit() {

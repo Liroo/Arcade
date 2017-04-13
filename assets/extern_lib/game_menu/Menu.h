@@ -44,6 +44,8 @@ namespace Arcade {
       Button _scores;
       Button _availableLibPopUp;
 
+      void _updatePopUpText();
+
       int _cursorPosition;
       ObjectList _objects;
 
