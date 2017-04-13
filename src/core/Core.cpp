@@ -43,6 +43,8 @@ bool Core::init(const std::string& libName) {
 
   // setting index
   _availableLibIndex = std::distance(_availableLib.begin(), it);
+  _currentPseudo = "";
+  _currentGame = "";
   _gameChanging = false;
   _gameWorking = false;
   _nextGame = NULL;

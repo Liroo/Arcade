@@ -1,6 +1,7 @@
 #include <cmath>
 #include "Menu.h"
 #include "exceptions/ArcadeException.hpp"
+#include "components/Score.h"
 
 Arcade::Menu::Menu():
   _play("menu:play"),
@@ -216,6 +217,12 @@ void Arcade::Menu::_renderPopUp() {
       buffer += *it + "\n";
     }
     _availableLibPopUp.setText(buffer);
+
+    if (!_inputPseudo.empty()) {
+      std::string game = _game.getTextLayout();
+      int personalScore = Arcade::Score::getPersonalScoreForGame(game, _inputPseudo);
+      _personalScore.setText(_inputPseudo + " : " + std::string(std::to_string(personalScore)));
+    }
 
     _backgroundPopUp.size = { 297, 380 + _availableLibPopUp.getSize().second };
     _backgroundPopUp.position = { 495, 64 };

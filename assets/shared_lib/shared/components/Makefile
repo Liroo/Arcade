@@ -12,12 +12,14 @@ OBJ_GENDIR = $(OBJ_DIR)/
 SRC_GEN = AnimatedObject.cpp \
 	Button.cpp \
 	Carroussel.cpp \
-	Timer.cpp
+	Timer.cpp \
+	Score.cpp
 
 INC_GEN = AnimatedObject.h \
 	Button.h \
 	Carroussel.h \
-	Timer.h
+	Timer.h \
+	Score.h
 
 OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 

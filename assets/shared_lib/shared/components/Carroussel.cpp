@@ -137,6 +137,9 @@ std::vector<std::string> Carroussel::getTextList() const {
 }
 
 std::string Carroussel::getTextLayout() const {
+  if (_textListIndex >= (int)_textList.size()) {
+    return "";
+  }
   return _textList[_textListIndex];
 }
 
