@@ -55,7 +55,7 @@ install:
 	@make --no-print-directory -C "./assets/extern_lib/lib_caca" install
 	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin"
 	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" install
-	@make --no-print-directory $(NAME_BIN)
+	@make --no-print-directory
 
 reinstall:
 	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" re
@@ -76,7 +76,7 @@ reinstall:
 	@make --no-print-directory -C "./assets/extern_lib/lib_caca" install
 	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" re
 	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" install
-	@make --no-print-directory $(NAME_BIN) re
+	@make --no-print-directory re
 
 uninstall:
 	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" fclean
@@ -88,7 +88,7 @@ uninstall:
 	@make --no-print-directory -C "./assets/extern_lib/lib_allegro" fclean
 	@make --no-print-directory -C "./assets/extern_lib/lib_caca" fclean
 	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" fclean
-	@make --no-print-directory $(NAME_BIN) fclean
+	@make --no-print-directory fclean
 
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)

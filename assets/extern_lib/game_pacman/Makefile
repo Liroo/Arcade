@@ -49,7 +49,7 @@ clean:
 
 fclean:	clean
 	$(RM) $(NAME_BIN)
-	$(RM) $(ROOT_PROJECT)games/menu/$(NAME_BIN)
+	$(RM) $(ROOT_PROJECT)games/$(NAME_BIN)
 
 re: fclean all
 
