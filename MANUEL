@@ -1,0 +1,62 @@
+ __  __   _   _  _ _   _ ___ _         _       _   _     _   ___  ___   _   ___  ___
+|  \/  | /_\ | \| | | | | __| |     __| |___  | | ( )   /_\ | _ \/ __| /_\ |   \| __|
+| |\/| |/ _ \| .` | |_| | _|| |__  / _` / -_) | | |/   / _ \|   / (__ / _ \| |) | _|
+|_|  |_/_/ \_\_|\_|\___/|___|____| \__,_\___| |_|     /_/ \_\_|_\\___/_/ \_\___/|___|
+
+
+L'arcade est divisée en trois parties : le Core, les Librairies graphiques et les libraires de jeux.
+
+Le menu permet de pouvoir choisir entre les différentes librairies proposées. Il faut choisir une librairie graphique, et un jeu. Le core enverra appelera la libraire graphique afin de lui envoyer les données à afficher que le jeu aura calculé.
+
+
+Utilisation :
+
+Charger les librairies
+./linkLib.js install
+
+Lancer l'arcade
+./arcade [CHEMIN VERS LA LIBRAIRIE GRAPHIQUE VOULUE]
+
+Touches :
+
+• ’2’ : Librairie graphique précédente.
+• ’3’ : Libraire graphique suivante.
+• ’4’ : Jeu précédent.
+• ’5’ : Jeu suivant.
+• ’8’ : Redémarrer le jeu.
+• ’9’ : Revenir au menu.
+• Echap: Quitter.
+
+
+Les fonctions publiques communes des librairies graphiques :
+
+- init
+Initialise la nouvelle fenetre de la librairie graphique
+
+- run
+Lance la loop qui permet de laisser afficher la fenetre
+
+- update
+Va raffraichir la fenetre avec de nouveaux objets à afficher envoyés tout droit des librairies de jeux
+
+- close
+Arettes la loop et quitte la librairie graphique
+
+
+
+Les fonctions publiques communes des librairies de jeux :
+
+- start
+Initialise et lance le jeu
+
+- reset
+Reinitialise la mémoire du jeu
+
+- tick
+Retourne un vecteur d'objet chaque fois que le jeu est mis à jour
+
+- handleEvent
+Manipule les évènements recus par la librairie graphique
+
+- dump
+retourne un vecteur de tous les objets
