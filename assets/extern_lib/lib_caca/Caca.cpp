@@ -24,7 +24,6 @@ void Caca::run() {
   caca_refresh_display(_display);
   _isLooping = true;
   while (isRunning()) {
-    std::cout << "tick" << std::endl;
     while (caca_get_event(_display, CACA_EVENT_ANY, &ev, 10000)) {
       if (caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS) {
         _handleEvent(ev);
@@ -98,7 +97,16 @@ void Caca::_drawImage(Arcade::Object obj) {
 }
 
 void Caca::_drawText(Arcade::Object obj) {
-  (void)obj;
+  int red = (obj.backgroundColor & 0xff0000) >> 16;
+  int green = (obj.backgroundColor & 0x00ff00) >> 8;
+  int blue = (obj.backgroundColor & 0x0000ff);
+  uint16_t BGRColor = red >> 3;
+  BGRColor |= (green & 0xFC) << 3;
+  BGRColor |= (blue  & 0xF8) << 8;
+  caca_set_color_argb(_canvas, 0xffff, BGRColor);
+  caca_put_str(_canvas,
+    obj.rawPosition.first, obj.rawPosition.second,
+    obj.text.c_str());
 }
 
 bool Caca::isRunning() const {
@@ -116,8 +124,6 @@ bool Caca::isClosed() const {
 void Caca::_handleEvent(caca_event_t e) {
   int key = caca_get_event_key_ch(&e);
   Arcade::KeyType keyPressed = Arcade::KeyType::KEY_UNKNOWN;
-
-  std::cout << key << std::endl;
 
   switch (key) {
     case '2':
