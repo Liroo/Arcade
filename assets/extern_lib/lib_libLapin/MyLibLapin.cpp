@@ -13,7 +13,7 @@ Arcade::MyLibLapin::~MyLibLapin() {}
 void Arcade::MyLibLapin::init(const Arcade::Callback& tmp) {
   Arcade::MyLibLapin::callbackFunction = tmp; // init static member variable
 
-  _window = bunny_start(1281, 721, false, "LibLapin Window"); // Create window
+  _window = bunny_start(1280, 720, false, "LibLapin Window"); // Create window
   if (!_window) {
     throw Arcade::Exception::ArcadeException(ERR_GRAPHICINIT);
   }
