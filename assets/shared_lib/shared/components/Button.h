@@ -18,7 +18,9 @@ namespace Arcade {
 
     private:
       std::pair<int, int> _size;
+      std::pair<int, int> _rawSize;
       std::pair<int, int> _position;
+      std::pair<int, int> _rawPosition;
       int _backgroundColor;
       int _focusColor;
       int _shadowColor;
@@ -29,6 +31,10 @@ namespace Arcade {
       void setSize(const std::pair<int, int>&);
       std::pair<int, int> getPosition() const;
       void setPosition(const std::pair<int, int>&);
+      std::pair<int, int> getRawSize() const;
+      void setRawSize(const std::pair<int, int>&);
+      std::pair<int, int> getRawPosition() const;
+      void setRawPosition(const std::pair<int, int>&);
       int getBackgroundColor() const;
       void setBackgroundColor(int);
       int getFocusColor() const;

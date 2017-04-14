@@ -40,6 +40,22 @@ void Button::setPosition(const std::pair<int, int>& position) {
   _position = position;
 }
 
+std::pair<int, int> Button::getRawSize() const {
+  return _rawSize;
+}
+
+void Button::setRawSize(const std::pair<int, int>& size) {
+  _rawSize = size;
+}
+
+std::pair<int, int> Button::getRawPosition() const {
+  return _rawPosition;
+}
+
+void Button::setRawPosition(const std::pair<int, int>& position) {
+  _rawPosition = position;
+}
+
 int Button::getBackgroundColor() const {
   return _backgroundColor;
 }
@@ -90,6 +106,8 @@ ObjectList Button::render() {
   _shadow.elevation = 10;
 
   // background object
+  _background.rawPosition = _rawPosition;
+  _background.rawSize = _rawSize;
   _background.position = _position;
   _background.size = bgSize;
   _background.backgroundColor = _backgroundColor;
@@ -97,6 +115,8 @@ ObjectList Button::render() {
   _background.text = _text;
 
   // shadow object
+  _shadow.rawPosition = _rawPosition;
+  _shadow.rawSize = _rawSize;
   _shadow.position = {
     _position.first,
     _position.second + bgSize.second + 1
@@ -122,6 +142,8 @@ ObjectList Button::renderFocus() {
   _shadow.elevation = 10;
 
   // background object
+  _background.rawPosition = _rawPosition;
+  _background.rawSize = _rawSize;
   _background.position = _position;
   _background.size = bgSize;
   _background.backgroundColor = _focusColor;
@@ -129,6 +151,8 @@ ObjectList Button::renderFocus() {
   _background.text = _text;
 
   // shadow object
+  _shadow.rawPosition = _rawPosition;
+  _shadow.rawSize = _rawSize;
   _shadow.position = {
     _position.first,
     _position.second + bgSize.second + 1
@@ -154,6 +178,8 @@ ObjectList Button::renderPressed() {
   _shadow.elevation = 10;
 
   // background object
+  _background.rawPosition = _rawPosition;
+  _background.rawSize = _rawSize;
   _background.position = _position;
   _background.size = bgSize;
   _background.backgroundColor = _backgroundColor;
@@ -161,6 +187,8 @@ ObjectList Button::renderPressed() {
   _background.text = _text;
 
   // shadow object
+  _shadow.rawPosition = _rawPosition;
+  _shadow.rawSize = _rawSize;
   _shadow.position = {
     _position.first,
     _position.second + bgSize.second

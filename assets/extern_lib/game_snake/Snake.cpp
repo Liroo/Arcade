@@ -29,8 +29,8 @@ Snake::Snake():
   _board.position = { 60, 60 };
   _board.size = { 600, 600 };
   _board.backgroundColor = 0x4F4D39;
-  _board.rawPosition = { 2, 2 };
-  _board.rawSize = { 31, 31 };
+  _board.rawPosition = { 3, 3 };
+  _board.rawSize = { 30, 30 };
   _board.elevation = 7;
 
 
@@ -38,8 +38,8 @@ Snake::Snake():
   _boardWall.position = { 40, 40 };
   _boardWall.size = { 640, 640 };
   _boardWall.backgroundColor = 0x7C7A6B;
-  _boardWall.rawPosition = { 1, 1 };
-  _boardWall.rawSize = { 33, 33 };
+  _boardWall.rawPosition = { 2, 2 };
+  _boardWall.rawSize = { 32, 32 };
   _boardWall.elevation = 6;
 
   _titleButton.setSize({ 430, 80 });
@@ -47,6 +47,8 @@ Snake::Snake():
   _titleButton.setBackgroundColor(0xFF6951);
   _titleButton.setShadowColor(0xC75959);
   _titleButton.setFontSize(42);
+  _titleButton.setRawSize({ 15, 3 });
+  _titleButton.setRawPosition({ 60, 5 });
   _titleButton.setText("Nibbler");
 
   _timeButton.setSize({ 430, 80 });
@@ -54,6 +56,9 @@ Snake::Snake():
   _timeButton.setBackgroundColor(0x4D519F);
   _timeButton.setShadowColor(0x6759C7);
   _timeButton.setFontSize(42);
+  _timeButton.setRawSize({ 15, 3 });
+  _timeButton.setRawPosition({ 60, 10 });
+
   _timeButton.setText("00:00");
 
   _scoreButton.setSize({ 430, 80 });
@@ -61,6 +66,8 @@ Snake::Snake():
   _scoreButton.setBackgroundColor(0x79A05F);
   _scoreButton.setShadowColor(0x628A47);
   _scoreButton.setFontSize(42);
+  _scoreButton.setRawSize({ 15, 3 });
+  _scoreButton.setRawPosition({ 60, 15 });
   _scoreButton.setText("00");
 
   _car.setSize({ 505, 245 });
