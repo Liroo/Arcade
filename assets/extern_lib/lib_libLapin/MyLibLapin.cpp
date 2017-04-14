@@ -184,6 +184,9 @@
         _cache[obj.id] = pic;
       }
     }
+    if (!pic) {
+      return;
+    }
 
     pos.x = obj.position.first;
     pos.y = obj.position.second;

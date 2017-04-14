@@ -218,6 +218,10 @@ void Allegro::_drawImage(const Arcade::Object& obj) {
   ImageCacheSystem cacheItem = _getImageFromCache(obj);
   ALLEGRO_BITMAP* image = cacheItem.image;
 
+  if (!image) {
+    return;
+  }
+
   float w = al_get_bitmap_width(image);
   float h = al_get_bitmap_height(image);
   al_draw_scaled_rotated_bitmap(image,
