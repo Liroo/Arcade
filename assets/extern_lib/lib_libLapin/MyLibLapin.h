@@ -8,12 +8,12 @@
 # define FONT_PATH "assets/ressource/font/font.png"
 # define FONT_SPECIALPATH "assets/ressource/font/specialFont.png"
 
-namespace Arcade{
+namespace Arcade {
 
   /*
   ** Graphic class using MyLibLapin
   */
-  class MyLibLapin : public IGraphic {
+  class MyLibLapin: public IGraphic {
 
   public:
     MyLibLapin();
@@ -62,11 +62,13 @@ namespace Arcade{
     std::map<std::string, t_bunny_picture*> _cache;
   };
 
-  extern "C" {
-    Arcade::IGraphic* load_lib() {
-      return new MyLibLapin;
-    }
+}
 
+
+extern "C" {
+  Arcade::IGraphic* load_lib() {
+    return new Arcade::MyLibLapin;
+  }
 }
 
 #endif

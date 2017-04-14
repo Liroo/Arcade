@@ -4,7 +4,7 @@ OBJ_DIR = ./obj
 
 # General behavior
 
-NAME_BIN = libMenu.so
+NAME_BIN = libmenu.so
 
 SRC_GENDIR = ./
 OBJ_GENDIR = $(OBJ_DIR)/

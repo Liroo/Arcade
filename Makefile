@@ -36,6 +36,60 @@ all:
 debug: fclean
 	@make --no-print-directory $(NAME_BIN) DEBUG='-DDEBUG -g'
 
+install:
+	@make --no-print-directory -C "./assets/shared_lib/opaque/basic"
+	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" install
+	@make --no-print-directory -C "./assets/shared_lib/shared/components"
+	@make --no-print-directory -C "./assets/shared_lib/shared/components" install
+	@make --no-print-directory -C "./assets/shared_lib/shared/lib_loader"
+	@make --no-print-directory -C "./assets/shared_lib/shared/lib_loader" install
+	@make --no-print-directory -C "./assets/extern_lib/game_menu"
+	@make --no-print-directory -C "./assets/extern_lib/game_menu" install
+	@make --no-print-directory -C "./assets/extern_lib/game_pacman"
+	@make --no-print-directory -C "./assets/extern_lib/game_pacman" install
+	@make --no-print-directory -C "./assets/extern_lib/game_snake"
+	@make --no-print-directory -C "./assets/extern_lib/game_snake" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_allegro"
+	@make --no-print-directory -C "./assets/extern_lib/lib_allegro" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_caca"
+	@make --no-print-directory -C "./assets/extern_lib/lib_caca" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin"
+	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" install
+	@make --no-print-directory $(NAME_BIN)
+
+reinstall:
+	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" re
+	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" install
+	@make --no-print-directory -C "./assets/shared_lib/shared/components" re
+	@make --no-print-directory -C "./assets/shared_lib/shared/components" install
+	@make --no-print-directory -C "./assets/shared_lib/shared/lib_loader" re
+	@make --no-print-directory -C "./assets/shared_lib/shared/lib_loader" install
+	@make --no-print-directory -C "./assets/extern_lib/game_menu" re
+	@make --no-print-directory -C "./assets/extern_lib/game_menu" install
+	@make --no-print-directory -C "./assets/extern_lib/game_pacman" re
+	@make --no-print-directory -C "./assets/extern_lib/game_pacman" install
+	@make --no-print-directory -C "./assets/extern_lib/game_snake" re
+	@make --no-print-directory -C "./assets/extern_lib/game_snake" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_allegro" re
+	@make --no-print-directory -C "./assets/extern_lib/lib_allegro" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_caca" re
+	@make --no-print-directory -C "./assets/extern_lib/lib_caca" install
+	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" re
+	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" install
+	@make --no-print-directory $(NAME_BIN) re
+
+uninstall:
+	@make --no-print-directory -C "./assets/shared_lib/opaque/basic" fclean
+	@make --no-print-directory -C "./assets/shared_lib/shared/components" fclean
+	@make --no-print-directory -C "./assets/shared_lib/shared/lib_loader" fclean
+	@make --no-print-directory -C "./assets/extern_lib/game_menu" fclean
+	@make --no-print-directory -C "./assets/extern_lib/game_pacman" fclean
+	@make --no-print-directory -C "./assets/extern_lib/game_snake" fclean
+	@make --no-print-directory -C "./assets/extern_lib/lib_allegro" fclean
+	@make --no-print-directory -C "./assets/extern_lib/lib_caca" fclean
+	@make --no-print-directory -C "./assets/extern_lib/lib_libLapin" fclean
+	@make --no-print-directory $(NAME_BIN) fclean
+
 $(OBJ_GENDIR)%.o: $(SRC_GENDIR)%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
