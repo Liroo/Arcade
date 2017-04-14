@@ -22,17 +22,24 @@ Snake::Snake():
   _background.size = { 1280, 720 };
   _background.backgroundColor = 0xC89123;
   _background.elevation = 1;
+  _background.rawPosition = { 0, 0 };
+  _background.rawSize = { 128, 36 };
 
   _board.id = "board";
   _board.position = { 60, 60 };
   _board.size = { 600, 600 };
   _board.backgroundColor = 0x4F4D39;
+  _board.rawPosition = { 2, 2 };
+  _board.rawSize = { 31, 31 };
   _board.elevation = 7;
+
 
   _boardWall.id = "boardWall";
   _boardWall.position = { 40, 40 };
   _boardWall.size = { 640, 640 };
   _boardWall.backgroundColor = 0x7C7A6B;
+  _boardWall.rawPosition = { 1, 1 };
+  _boardWall.rawSize = { 33, 33 };
   _boardWall.elevation = 6;
 
   _titleButton.setSize({ 430, 80 });
@@ -176,7 +183,7 @@ void Snake::_serializeSnake() {
 
   baseObject.size = { 20, 20 };
   baseObject.elevation = 30;
-  baseObject.backgroundColor = -1;
+  baseObject.backgroundColor = 0x4F4D39;
   baseObject.id = std::string("snake:head:0");
   std::pair<int, int> direction = _movement;
   std::pair<int, int> lastCase = _snake[0];
@@ -184,10 +191,14 @@ void Snake::_serializeSnake() {
     60 + 20 * _snake[0].first + (direction.first * (deltaTime * 20 / _speed)),
     60 + 20 * _snake[0].second + (direction.second * (deltaTime * 20 / _speed))
   };
+  baseObject.rawSize = { 1, 1 };
+  baseObject.rawPosition = { 3 + _snake[0].first, 3 + _snake[0].second };
   baseObject.imageName = std::string(DIR_RESSOURCES) + "head.png";
+  baseObject.rawImage = { "O" };
   appendObjectToList(_objects, baseObject);
 
   baseObject.imageName = std::string(DIR_RESSOURCES) + "body.png";
+
   int i = 0;
   for (auto it = _snake.begin() + 1; it < _snake.end(); it++) {
     baseObject.id = std::string("snake:body:") + std::to_string(i);
@@ -199,6 +210,9 @@ void Snake::_serializeSnake() {
       60 + 20 * (*it).first + (direction.first * (deltaTime * 20 / _speed)),
       60 + 20 * (*it).second + (direction.second * (deltaTime * 20 / _speed))
     };
+    baseObject.rawSize = { 1, 1 };
+    baseObject.rawPosition = { 3 + (*it).first, 3 + (*it).second };
+    baseObject.rawImage = { "o" };
     appendObjectToList(_objects, baseObject);
     lastCase = *it;
     i++;
@@ -210,8 +224,9 @@ void Snake::_serializeFruit() {
 
   baseObject.size = { 20, 20 };
   baseObject.elevation = 29;
-  baseObject.backgroundColor = -1;
+  baseObject.backgroundColor = 0x4F4D39;
   baseObject.imageName = std::string(DIR_RESSOURCES) + "apple.png";
+  baseObject.rawImage = { "x" };
   int i = 0;
   for (auto it = _fruit.begin(); it < _fruit.end(); it++) {
     baseObject.id = std::string("snake:fruit:") + std::to_string(i);
@@ -219,6 +234,8 @@ void Snake::_serializeFruit() {
       60 + 20 * (*it).first,
       60 + 20 * (*it).second
     };
+    baseObject.rawSize = { 1, 1 };
+    baseObject.rawPosition = { 3 + (*it).first, 3 + (*it).second };
     appendObjectToList(_objects, baseObject);
     i++;
   }

@@ -69,7 +69,7 @@ void Arcade::MyLibLapin::update(std::vector<Arcade::Object> objs) {
 
 void Arcade::MyLibLapin::_drawObj(const Arcade::Object& obj) {
 
-  if (obj.backgroundColor >= 0)
+  if (obj.backgroundColor >= 0 && obj.imageName.empty())
     _drawButton(obj);
   if (!obj.imageName.empty())
     _drawImage(obj);

@@ -1,4 +1,4 @@
-# include "Caca.h"
+# include "LibCaca.h"
 
 int main() {
   Arcade::IGraphic* caca = load_lib();

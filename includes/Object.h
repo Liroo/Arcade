@@ -38,6 +38,8 @@ namespace Arcade {
       if graphic library is ascii mode, use rawImage as image
     */
     std::vector<std::string> rawImage = {};
+    std::pair<int, int> rawSize = {};
+    std::pair<int, int> rawPosition = {};
     /*
       text:
       text to display at a certain position

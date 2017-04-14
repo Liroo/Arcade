@@ -27,6 +27,7 @@ class Caca: public Arcade::IGraphic {
 
     void _handleEvent(caca_event_t e);
 
+
   private:
     bool _isRunning;
     bool _isLooping;
@@ -34,6 +35,13 @@ class Caca: public Arcade::IGraphic {
   private:
     caca_display_t* _display;
     caca_canvas_t* _canvas;
+
+  private:
+    void _drawObj(Arcade::Object);
+
+    void _drawButton(Arcade::Object);
+    void _drawImage(Arcade::Object);
+    void _drawText(Arcade::Object);
 
 };
 

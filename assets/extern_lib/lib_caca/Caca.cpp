@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Caca.h"
+#include "LibCaca.h"
 #include "exceptions/ArcadeException.hpp"
 
 Caca::Caca() {}
@@ -46,7 +46,59 @@ void Caca::close() {
 }
 
 void Caca::update(Arcade::ObjectList objs) {
-  (void)objs;
+  if (!_isRunning) {
+    return;
+  }
+  std::sort(objs.begin(), objs.end(), [](Arcade::Object i1, Arcade::Object i2) -> bool {
+    return i1.elevation < i2.elevation;
+  });
+  std::for_each(objs.begin(), objs.end(), [=](Arcade::Object obj) {
+    if (obj.elevation > 0) {
+      _drawObj(obj);
+    }
+  });
+}
+
+void Caca::_drawObj(Arcade::Object obj) {
+  if (obj.backgroundColor >= 0)
+    _drawButton(obj);
+  if (!obj.rawImage.empty())
+    _drawImage(obj);
+  if (!obj.text.empty())
+    _drawText(obj);
+}
+
+void Caca::_drawButton(Arcade::Object obj) {
+  int red = (obj.backgroundColor & 0xff0000) >> 16;
+  int green = (obj.backgroundColor & 0x00ff00) >> 8;
+  int blue = (obj.backgroundColor & 0x0000ff);
+  uint16_t BGRColor = red >> 3;
+  BGRColor |= (green & 0xFC) << 3;
+  BGRColor |= (blue  & 0xF8) << 8;
+  caca_set_color_argb(_canvas, 0x0000, BGRColor);
+  caca_fill_box(_canvas,
+    obj.rawPosition.first, obj.rawPosition.second,
+    obj.rawSize.first,
+    obj.rawSize.second,
+    ' '
+  );
+}
+
+void Caca::_drawImage(Arcade::Object obj) {
+  int red = (obj.backgroundColor & 0xff0000) >> 16;
+  int green = (obj.backgroundColor & 0x00ff00) >> 8;
+  int blue = (obj.backgroundColor & 0x0000ff);
+  uint16_t BGRColor = red >> 3;
+  BGRColor |= (green & 0xFC) << 3;
+  BGRColor |= (blue  & 0xF8) << 8;
+  caca_set_color_argb(_canvas, 0xffff, BGRColor);
+  caca_put_str(_canvas,
+    obj.rawPosition.first, obj.rawPosition.second,
+    obj.rawImage[0].c_str());
+}
+
+void Caca::_drawText(Arcade::Object obj) {
+  (void)obj;
 }
 
 bool Caca::isRunning() const {
