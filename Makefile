@@ -18,8 +18,8 @@ OBJ_GEN = $(addprefix $(OBJ_GENDIR), $(SRC_GEN:.cpp=.o))
 
 INCDIRS := $(addprefix -I,$(shell find $(SRC_GENDIR) -type d -print)) -I./includes/
 CXX = g++
-LDFLAGS = -ldl -L./shared_lib -lDirectoryReader
-LDFLAGS += -Wl,-rpath=$(shell pwd)/shared_lib
+LDFLAGS = -ldl -L./shared_lib -lDirectoryReader -L./shared_lib -lComponents
+LDFLAGS += -Wl,-rpath,$(shell pwd)/shared_lib
 FLAGS = -W -Werror -Wextra -Wall
 FLAGS += -std=c++14
 FLAGS += $(DEBUG)
