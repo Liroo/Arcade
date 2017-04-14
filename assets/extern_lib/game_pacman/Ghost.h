@@ -19,6 +19,7 @@ namespace Arcade {
   class Ghost {
   private:
     std::pair<int, int> _position;
+    std::pair<int, int> _rawPosition;
     std::pair<int, int> _size;
     DirectionType _direction;
     std::string _id;
@@ -43,6 +44,8 @@ namespace Arcade {
     int getDirection() const;
     void setDirection(const DirectionType &);
     Object render();
+    std::pair<int, int> getRawPosition() const;
+    void setRawPosition(const std::pair<int, int>&);
 
   };
 };

@@ -35,6 +35,8 @@ Pacman::Pacman():
   _titleButton.setPosition({ 755, 60 });
   _titleButton.setBackgroundColor(0xFF6951);
   _titleButton.setShadowColor(0xC75959);
+  _titleButton.setRawSize({ 15, 3 });
+  _titleButton.setRawPosition({ 60, 5 });
   _titleButton.setFontSize(42);
   _titleButton.setText("Pacman");
 
@@ -43,6 +45,8 @@ Pacman::Pacman():
   _timeButton.setBackgroundColor(0x4D519F);
   _timeButton.setShadowColor(0x6759C7);
   _timeButton.setFontSize(42);
+  _timeButton.setRawSize({ 15, 3 });
+  _timeButton.setRawPosition({ 60, 10 });
   _timeButton.setText("00:00");
 
   _scoreButton.setSize({ 430, 80 });
@@ -50,6 +54,8 @@ Pacman::Pacman():
   _scoreButton.setBackgroundColor(0x79A05F);
   _scoreButton.setShadowColor(0x628A47);
   _scoreButton.setFontSize(42);
+  _scoreButton.setRawSize({ 15, 3 });
+  _scoreButton.setRawPosition({ 60, 15 });
   _scoreButton.setText("00");
 
   _pac.setSize({ 290, 220 });
@@ -153,22 +159,27 @@ void Pacman::drawMap() {
         if (*it2 == '1')
         {
           Square newSquare("pacman:wall:"+std::to_string(cmpt));
-          newSquare.setPosition({(45 + (std::distance(_map[y].begin(), it2) * 30)), (45 + (y * 30))});
-          newSquare.setBackgroundColor(0x082ab2);
+
+          newSquare.setPosition({std::distance(_map[y].begin(), it2), y});
+          newSquare.setBackgroundColor(0x0000ff);
+          newSquare.setRawPosition({ std::distance(_map[y].begin(), it2), y});
           appendObjectToList(_objects, newSquare.render());
         }
         else if (*it2 == '2') {
           Square fence("pacman:fence:"+std::to_string(cmpt));
-          fence.setPosition({(45 + (std::distance(_map[y].begin(), it2) * 30)), (45 + (y * 30))});
+          fence.setPosition({std::distance(_map[y].begin(), it2), y});
           fence.setBackgroundColor(0xF1A59B);
+          fence.setRawPosition({ std::distance(_map[y].begin(), it2), y});
           fence.setSize({30, 10});
           appendObjectToList(_objects, fence.render());
         }
         else {
           Square dotSquare("pacman:dot:"+std::to_string(cmpt));
-          dotSquare.setBackgroundColor(0x000000);
-          dotSquare.setPosition({(55 + (std::distance(_map[y].begin(), it2) * 30)), (55 + (y * 30))});
+          dotSquare.setBackgroundColor(0x7C7A6B);
+          dotSquare.setPosition({std::distance(_map[y].begin(), it2), y});
+          dotSquare.setRawPosition({ std::distance(_map[y].begin(), it2), y});
           dotSquare.setSize({5, 5});
+          dotSquare.setRawImage(".");
           dotSquare.setImage(std::string(DIR_RESSOURCES) + "pacman/dot.png");
           appendObjectToList(_objects, dotSquare.render());
         }
@@ -353,24 +364,28 @@ GameEvent Pacman::tick() {
   appendListToList(_objects, _timeButton.render());
   _scoreButton.setText(std::to_string(_score));
   appendListToList(_objects, _scoreButton.render());
-  Square cell(std::to_string(8 * 21 + 10));
-  cell.setPosition({(45 + 10 * 30), (45 + 8 * 30)});
+  Square cell("pacman:fence:"+std::to_string(8 * 21 + 10));
+  cell.setPosition({ 10, 8});
+  cell.setRawPosition({10, 8});
   cell.setBackgroundColor(0xF1A59B);
   cell.setSize({30, 10});
   setInMap({ 10, 8 }, '2');
   appendObjectToList(_objects, cell.render());
-  Square cell1(std::to_string(9 * 21 + 10));
-  cell.setPosition({45 + (10 * 30), 45 + (8 * 30)});
+  Square cell1("pacman:fence:"+std::to_string(9 * 21 + 10));
+  cell.setPosition({ 10, 9});
+  cell.setRawPosition({10, 9});
   cell.setBackgroundColor(0x000000);
   cell.setImage("");
   appendObjectToList(_objects, cell1.render());
-  Square cell2(std::to_string(9 * 21 + 9));
-  cell.setPosition({45 + (10 * 30), 45 + (8 * 30)});
+  Square cell2("pacman:fence:"+std::to_string(9 * 21 + 9));
+  cell.setPosition({ 9, 9});
+  cell.setRawPosition({9, 9});
   cell.setBackgroundColor(0x000000);
   cell.setImage("");
   appendObjectToList(_objects, cell2.render());
-  Square cell3(std::to_string(9 * 21 + 11));
-  cell.setPosition({45 + (10 * 30), 45 + (8 * 30)});
+  Square cell3("pacman:fence:"+std::to_string(9 * 21 + 11));
+  cell.setPosition({ 11, 9});
+  cell.setRawPosition({11, 9});
   cell.setBackgroundColor(0x000000);
   cell.setImage("");
   appendObjectToList(_objects, cell3.render());
@@ -438,9 +453,12 @@ void Pacman::movePlayer(const int &deltaTime) {
     _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-    cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+    cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
+    cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setBackgroundColor(0x7C7A6B);
     cell.setImage("");
+    cell.setSize({5, 5});
+    cell.setRawImage(" ");
     appendObjectToList(_objects, cell.render());
     appendObjectToList(_objects, _pacpac.render());
     _pacpac.setDirection(DirectionType::DIRECTION_DOWN);
@@ -460,9 +478,12 @@ void Pacman::movePlayer(const int &deltaTime) {
             _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-            cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+            cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setBackgroundColor(0x7C7A6B);
+            cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setImage("");
+            cell.setSize({5, 5});
+            cell.setRawImage(" ");
             appendObjectToList(_objects, cell.render());
             appendObjectToList(_objects, _pacpac.render());
             _pacpac.setDirection(DirectionType::DIRECTION_UP);
@@ -482,9 +503,12 @@ void Pacman::movePlayer(const int &deltaTime) {
             _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-            cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+            cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setBackgroundColor(0x7C7A6B);
+            cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setImage("");
+            cell.setSize({5, 5});
+            cell.setRawImage(" ");
             appendObjectToList(_objects, cell.render());
             appendObjectToList(_objects, _pacpac.render());
             _pacpac.setDirection(DirectionType::DIRECTION_LEFT);
@@ -504,9 +528,12 @@ void Pacman::movePlayer(const int &deltaTime) {
             _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
             Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-            cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+            cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setBackgroundColor(0x7C7A6B);
+            cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
             cell.setImage("");
+            cell.setSize({5, 5});
+            cell.setRawImage(" ");
             appendObjectToList(_objects, cell.render());
             appendObjectToList(_objects, _pacpac.render());
             _pacpac.setDirection(DirectionType::DIRECTION_RIGHT);
@@ -533,9 +560,12 @@ GameEvent Pacman::_keyDown() {
     _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-    cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+    cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setBackgroundColor(0x7C7A6B);
+    cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setImage("");
+    cell.setSize({5, 5});
+    cell.setRawImage(" ");
     appendObjectToList(_objects, cell.render());
     appendObjectToList(_objects, _pacpac.render());
     _pacpac.setDirection(DirectionType::DIRECTION_DOWN);
@@ -565,9 +595,12 @@ GameEvent Pacman::_keyUp() {
     _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-    cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+    cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setBackgroundColor(0x7C7A6B);
+    cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setImage("");
+    cell.setRawImage(" ");
+    cell.setSize({5, 5});
     appendObjectToList(_objects, cell.render());
     appendObjectToList(_objects, _pacpac.render());
     _pacpac.setDirection(DirectionType::DIRECTION_UP);
@@ -597,9 +630,12 @@ GameEvent Pacman::_keyLeft() {
     _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-    cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+    cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setBackgroundColor(0x7C7A6B);
+    cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setImage("");
+    cell.setSize({5, 5});
+    cell.setRawImage(" ");
     appendObjectToList(_objects, cell.render());
     appendObjectToList(_objects, _pacpac.render());
     _pacpac.setDirection(DirectionType::DIRECTION_LEFT);
@@ -628,9 +664,12 @@ GameEvent Pacman::_keyRight() {
     _cellToPass.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     _map.at(_pacpac.getPosition().second).at(_pacpac.getPosition().first) = _pacpac.getInMap();
     Square cell("pacman:dot:"+std::to_string(_pacpac.getPosition().second * 21 + _pacpac.getPosition().first));
-    cell.setPosition({45 + (_pacpac.getPosition().first * 30), 45 + (_pacpac.getPosition().second * 30)});
+    cell.setPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
     cell.setBackgroundColor(0x7C7A6B);
+    cell.setRawPosition({_pacpac.getPosition().first, _pacpac.getPosition().second});
+    cell.setSize({5, 5});
     cell.setImage("");
+    cell.setRawImage(" ");
     appendObjectToList(_objects, cell.render());
     appendObjectToList(_objects, _pacpac.render());
     _pacpac.setDirection(DirectionType::DIRECTION_RIGHT);

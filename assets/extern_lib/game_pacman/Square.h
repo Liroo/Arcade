@@ -22,8 +22,10 @@ namespace Arcade {
     int getRotation() const;
     void setRotation(const int&);
     std::vector<std::string> getRawImage() const;
-    void setRawImage(const std::vector<std::string>&);
+    void setRawImage(const std::string&);
     Object render();
+    std::pair<int, int> getRawPosition() const;
+    void setRawPosition(const std::pair<int, int>&);
 
   private:
     Object _object;

@@ -1,4 +1,5 @@
 #include "Square.h"
+#include <iostream>
 
 using namespace Arcade;
 
@@ -10,6 +11,7 @@ Square::Square(const std::string &id) {
   _object.size = {30, 30};
   _object.imageRotation = 0.0;
   _object.rawImage = {};
+  _object.rawSize = { 1, 1 };
 }
 
 Square::Square(const std::pair<int, int> &pos, const std::pair<int, int> &size, const std::string &id) {
@@ -21,6 +23,7 @@ Square::Square(const std::pair<int, int> &pos, const std::pair<int, int> &size, 
   _object.imageName = "";
   _object.imageRotation = 0.0;
   _object.rawImage = {};
+  _object.rawSize = { 1, 1 };
 }
 
 std::pair<int, int> Square::getPosition() const {
@@ -67,10 +70,22 @@ std::vector<std::string> Square::getRawImage() const {
   return _object.rawImage;
 }
 
-void Square::setRawImage(const std::vector<std::string> &rawImage) {
-  _object.rawImage = rawImage;
+std::pair<int, int> Arcade::Square::getRawPosition() const {
+  return _object.rawPosition;
+}
+
+void Arcade::Square::setRawPosition(const std::pair<int, int>&rawPosition) {
+  _object.rawPosition = rawPosition;
+}
+
+void Square::setRawImage(const std::string &rawImage) {
+  _object.rawImage.push_back(rawImage);
 }
 
 Object Square::render() {
+  if (_object.size.first == 5 && _object.size.second == 5)
+    _object.position = { 55 + (_object.position.first * 30), 55 + (_object.position.second * 30)};
+  else
+    _object.position = { 45 + (_object.position.first * 30), 45 + (_object.position.second * 30)};
   return _object;
 }

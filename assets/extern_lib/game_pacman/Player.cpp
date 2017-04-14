@@ -9,6 +9,7 @@ Arcade::Player::Player(const std::string &id, const std::string &image){
   _imageName = image;
   _elevation = 50;
   _rotation = 0;
+  _rawPosition = { 10, 11 };
 }
 
 std::pair<int, int> Arcade::Player::getPosition() const {
@@ -67,12 +68,22 @@ void Arcade::Player::setRotation(const int &rotation) {
   _rotation = rotation;
 }
 
+std::pair<int, int> Arcade::Player::getRawPosition() const {
+  return _rawPosition;
+}
+
+void Arcade::Player::setRawPosition(const std::pair<int, int>&rawPosition) {
+  _rawPosition = rawPosition;
+}
+
 Arcade::Object Arcade::Player::render() {
+  _object.rawPosition = _position;
   _object.position = {45 + _position.first * 30, 45 + _position.second * 30};
   _object.size = _size;
   _object.elevation = _elevation;
   _object.id = _id;
   _object.imageName = _imageName;
   _object.imageRotation = _rotation;
+  _object.rawImage.push_back("C");
   return _object;
 }

@@ -11,6 +11,7 @@ namespace Arcade {
   private:
     std::pair<int, int> _position;
     std::pair<int, int> _size;
+    std::pair<int, int> _rawPosition;
     std::vector<std::pair<int, int>> _cellToPass;
     char _inMap;
     DirectionType _direction;
@@ -38,6 +39,8 @@ namespace Arcade {
     float getRotation() const;
     void setRotation(const int &);
     Object render();
+    std::pair<int, int> getRawPosition() const;
+    void setRawPosition(const std::pair<int, int>&);
 
   };
 };

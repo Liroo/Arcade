@@ -66,11 +66,21 @@ std::string Arcade::Ghost::getId() const {
   return _id;
 }
 
+std::pair<int, int> Arcade::Ghost::getRawPosition() const {
+  return _rawPosition;
+}
+
+void Arcade::Ghost::setRawPosition(const std::pair<int, int>&rawPosition) {
+  _rawPosition = rawPosition;
+}
+
 Arcade::Object Arcade::Ghost::render() {
+  _object.rawPosition = _position;
   _object.position = {45 + _position.first * 30, 45 + _position.second * 30};
   _object.size = _size;
   _object.elevation = _elevation;
   _object.id = _id;
   _object.imageName = _imageName;
+  _object.rawImage.push_back("X");
   return _object;
 }
