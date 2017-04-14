@@ -25,8 +25,11 @@ class Caca: public Arcade::IGraphic {
   private:
     Arcade::Callback _callback;
 
+    void _handleEvent(caca_event_t e);
+
   private:
     bool _isRunning;
+    bool _isLooping;
 
   private:
     caca_display_t* _display;
