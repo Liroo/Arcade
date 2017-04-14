@@ -152,13 +152,13 @@ void Pacman::drawMap() {
       for (std::string::iterator it2 = _map[y].begin(); it2 != _map[y].end(); it2++) {
         if (*it2 == '1')
         {
-          Square newSquare(std::to_string(cmpt));
+          Square newSquare("pacman:wall:"+std::to_string(cmpt));
           newSquare.setPosition({(45 + (std::distance(_map[y].begin(), it2) * 30)), (45 + (y * 30))});
           newSquare.setBackgroundColor(0x082ab2);
           appendObjectToList(_objects, newSquare.render());
         }
         else if (*it2 == '2') {
-          Square fence(std::to_string(cmpt));
+          Square fence("pacman:fence:"+std::to_string(cmpt));
           fence.setPosition({(45 + (std::distance(_map[y].begin(), it2) * 30)), (45 + (y * 30))});
           fence.setBackgroundColor(0xF1A59B);
           fence.setSize({30, 10});

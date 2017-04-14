@@ -24,33 +24,34 @@
   }
 
   bool MyLibLapin::isRunning() const {
-    return _isLooping;
+    return _isLooping || !_isWorking;
   }
 
   bool MyLibLapin::isDeletable() const {
-    return !_isLooping;
+    return !_isLooping && !_isWorking;
   }
 
   bool MyLibLapin::isClosed() const {
-    return _isLooping;
+    return !_isLooping;
   }
 
   void MyLibLapin::run() {
-
     _isLooping = true;
     bunny_loop(_window, 10, this);
-    _isLooping = false;
+    bunny_stop(_window);
+    for (auto it = _cache.begin(); it != _cache.end(); ++it) {
+      bunny_delete_clipable(it->second);
+    }
   }
 
   void MyLibLapin::close() {
-
-    bunny_stop(_window);
+    _isLooping = false;
   }
 
   void MyLibLapin::update(std::vector<Arcade::Object> objs) {
 
     if (_isLooping) {
-
+      _isWorking = true;
       bunny_fill(&_window->buffer, BLACK);
       std::sort(objs.begin(), objs.end(), [](Arcade::Object i1, Arcade::Object i2) -> bool {
         return i1.elevation < i2.elevation;
@@ -58,7 +59,10 @@
       std::for_each(objs.begin(), objs.end(), [=](Arcade::Object obj) {
         _drawObj(obj);
       });
-      bunny_display(_window); // compute every drawing made on the window and display it on screen
+      if (_isLooping) {
+        bunny_display(_window); // compute every drawing made on the window and display it on screen
+      }
+      _isWorking = false;
     }
   }
 
@@ -117,7 +121,9 @@
           letter->scale.y = (float)((float)(obj.fontSize - (obj.fontSize / 2)) / (float)letter->clip_height);
         letter->scale.x = (float)((float)(obj.fontSize - (obj.fontSize / 2)) / (float)letter->clip_width);
 
-        bunny_blit(&_window->buffer, letter, &pos);
+        if (_isLooping) {
+          bunny_blit(&_window->buffer, letter, &pos);
+        }
     }
   }
 
@@ -126,7 +132,22 @@
     t_bunny_picture *pic; // Picture
     t_bunny_position pos; // Picture's position
 
-    pic = bunny_new_picture(obj.size.first, obj.size.second); // Load picture
+    int isSameCount = std::count(obj.id.begin(), obj.id.end(), ':');
+    try {
+      if (isSameCount == 2) {
+        pic = _cache.at(obj.id.substr(0, obj.id.find_last_of(':')));
+      } else {
+        pic = _cache.at(obj.id);
+      }
+    } catch (std::out_of_range &e) {
+      (void)e;
+      pic = bunny_new_picture(obj.size.first, obj.size.second); // Load picture
+      if (isSameCount == 2) {
+        _cache[obj.id.substr(0, obj.id.find_last_of(':'))] = pic;
+      } else {
+        _cache[obj.id] = pic;
+      }
+    }
 
     pos.x = obj.position.first;
     pos.y = obj.position.second;
@@ -138,17 +159,31 @@
     bunny_fill(&pic->buffer, COLOR(255, r, g, b));
 
     /* Draw the picture on screen at the sent position */
-    bunny_blit(&_window->buffer, pic, &pos);
-    bunny_delete_clipable(pic);
-
+    if (_isLooping) {
+      bunny_blit(&_window->buffer, pic, &pos);
+    }
   }
 
   void MyLibLapin::_drawImage(const Arcade::Object& obj) {
-
     t_bunny_picture *pic; // Picture
     t_bunny_position pos; // Picture's position
 
-    pic = bunny_load_picture(obj.imageName.c_str()); // Load picture
+    int isSameCount = std::count(obj.id.begin(), obj.id.end(), ':');
+    try {
+      if (isSameCount == 2) {
+        pic = _cache.at(obj.id.substr(0, obj.id.find_last_of(':')));
+      } else {
+        pic = _cache.at(obj.id);
+      }
+    } catch (std::out_of_range &e) {
+      (void)e;
+      pic = bunny_load_picture(obj.imageName.c_str()); // Load picture
+      if (isSameCount == 2) {
+        _cache[obj.id.substr(0, obj.id.find_last_of(':'))] = pic;
+      } else {
+        _cache[obj.id] = pic;
+      }
+    }
 
     pos.x = obj.position.first;
     pos.y = obj.position.second;
@@ -161,9 +196,9 @@
     pic->rotation = obj.imageRotation;
 
     /* Draw the picture on screen at the sent position */
-    bunny_blit(&_window->buffer, pic, &pos);
-    bunny_delete_clipable(pic);
-
+    if (_isLooping) {
+      bunny_blit(&_window->buffer, pic, &pos);
+    }
   }
 
   Event MyLibLapin::eventAssign(EventType event, KeyType key, int value) {
@@ -177,12 +212,12 @@
   }
 
   t_bunny_response	MyLibLapin::main_loop(void *data) {
-
-    (void)data;
-
     // Send Tick to Core
     Arcade::MyLibLapin::callbackFunction(Arcade::MyLibLapin::eventAssign(TICK, KEY_UNKNOWN, 0));
-    return (GO_ON);
+    if (!((MyLibLapin*)data)->isClosed()) {
+      return (GO_ON);
+    }
+    return (EXIT_ON_SUCCESS);
   }
 
   t_bunny_response	MyLibLapin::key_response(t_bunny_event_state state, t_bunny_keysym sym, void *data) {
@@ -230,13 +265,17 @@
         case BKS_RETURN:
           keyPressed = Arcade::KeyType::KEY_ENTER;
           break;
+        case BKS_BACKSPACE:
+          sym = (t_bunny_keysym)62;
+          break;
         default:
+          keyPressed = Arcade::KeyType::KEY_UNKNOWN;
           break;
       }
       callbackFunction({
         Arcade::EventType::KEY_PRESSED,
         keyPressed,
-        0
+        sym + 1
       });
     }
 
@@ -264,10 +303,7 @@
 
     std::map<char, t_bunny_picture*>::iterator it = _fontMap.begin();
     for (it=_fontMap.begin(); it!=_fontMap.end(); ++it) {
-
-      std::cout << it->first << std::endl;
       bunny_delete_clipable(it->second);
-      std::cout << it->first << std::endl;
     }
   }
 

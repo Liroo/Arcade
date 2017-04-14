@@ -42,6 +42,8 @@ namespace Arcade{
     virtual bool isClosed() const;
     virtual void run();
 
+  bool _isWorking;
+
   public:
     static Callback callbackFunction; // Callback to the Core
     static Event eventAssign(EventType, KeyType, int); // Assign an Event
@@ -55,6 +57,9 @@ namespace Arcade{
     void _drawImage(const Object& obj);
     void _drawLetter(char, int, const Object);
     void _square(t_bunny_picture *, int, int, int, int, unsigned int);
+
+  private:
+    std::map<std::string, t_bunny_picture*> _cache;
   };
 
   extern "C" {

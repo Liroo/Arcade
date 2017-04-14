@@ -2,3 +2,6 @@ lib_arcade_nibbler.so:noname:11
 lib_arcade_nibbler.so:liroo:5000
 lib_arcade_nibbler.so:liroo:1173
 lib_arcade_pacman.so:liroo:490
+lib_arcade_nibbler.so:noname:2735
+lib_arcade_pacman.so::870
+lib_arcade_nibbler.so:noname:865

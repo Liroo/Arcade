@@ -3,8 +3,8 @@
 using namespace Arcade;
 
 Button::Button(const std::string& id) {
-  _background.id = id + ":background";
-  _shadow.id = id + ":shadow";
+  _background.id = id + "background";
+  _shadow.id = id + "shadow";
   _background.elevation = 11;
   _shadow.elevation = 10;
   _fontSize = 24;
@@ -13,8 +13,8 @@ Button::Button(const std::string& id) {
 Button::Button(const std::pair<int, int>& size,
   const std::pair<int, int>& position,
   const std::string& id) {
-  _background.id = id + ":background";
-  _shadow.id = id + ":shadow";
+  _background.id = id + "background";
+  _shadow.id = id + "shadow";
   _background.elevation = 11;
   _shadow.elevation = 10;
   _fontSize = 24;

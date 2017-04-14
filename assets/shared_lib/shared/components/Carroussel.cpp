@@ -4,9 +4,9 @@
 using namespace Arcade;
 
 Carroussel::Carroussel(const std::string& id):
-  _left(id + ":left"),
-  _center(id + ":center"),
-  _right(id + ":right") {
+  _left(id + "left"),
+  _center(id + "center"),
+  _right(id + "right") {
   _left.setText("<");
   _right.setText(">");
 }
@@ -17,21 +17,21 @@ Carroussel::Carroussel(const std::pair<int, int>& size,
     _left({
         size.second,
         size.second
-      }, position, id + ":left"),
+      }, position, id + "left"),
     _center({
       size.first - (2 * size.second) - 10,
       size.second
     }, {
       position.first + size.second + 5,
       size.second
-    }, id + ":center"),
+    }, id + "center"),
     _right({
       size.second,
       size.second
     }, {
       position.first + size.first - size.second,
       size.second
-    }, id + ":right")
+    }, id + "right")
 {
   _size = size;
   _position = position;
