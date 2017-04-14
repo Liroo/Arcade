@@ -31,6 +31,7 @@ class Caca: public Arcade::IGraphic {
   private:
     bool _isRunning;
     bool _isLooping;
+    bool _isWorking;
 
   private:
     caca_display_t* _display;

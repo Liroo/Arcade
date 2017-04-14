@@ -9,6 +9,7 @@ Caca::~Caca() {}
 void Caca::init(const Arcade::Callback& callback) {
   _callback = callback;
   _isRunning = true;
+  _isWorking = false;
 }
 
 void Caca::run() {
@@ -48,6 +49,7 @@ void Caca::update(Arcade::ObjectList objs) {
   if (!_isRunning) {
     return;
   }
+  _isWorking = true;
   std::sort(objs.begin(), objs.end(), [](Arcade::Object i1, Arcade::Object i2) -> bool {
     return i1.elevation < i2.elevation;
   });
@@ -56,6 +58,7 @@ void Caca::update(Arcade::ObjectList objs) {
       _drawObj(obj);
     }
   });
+  _isWorking = false;
 }
 
 void Caca::_drawObj(Arcade::Object obj) {
@@ -114,11 +117,11 @@ bool Caca::isRunning() const {
 }
 
 bool Caca::isDeletable() const {
-  return !(_isLooping || _isRunning);
+  return !(_isLooping || _isRunning || _isWorking);
 }
 
 bool Caca::isClosed() const {
-  return true;
+  return !(_isLooping || _isRunning || _isWorking);
 }
 
 void Caca::_handleEvent(caca_event_t e) {

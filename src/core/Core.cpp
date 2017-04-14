@@ -119,7 +119,7 @@ int Core::_deleteLib() {
   }
   int i = 0;
   for (; i < 10; i++) {
-    usleep(500);
+    usleep(200000);
     if (_graphic->isDeletable()) {
       break;
     }
